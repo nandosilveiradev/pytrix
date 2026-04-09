@@ -5,3 +5,6 @@
 venv/
 .teste.py.swp
 *.swp
+.docker/
+*.log
+docker-compose.override.yml
