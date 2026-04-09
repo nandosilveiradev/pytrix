@@ -1,0 +1,77 @@
+1. Movimentação Básica (Sem as setas!)
+
+    h, j, k, l — Esquerda, Baixo, Cima, Direita.
+
+    w — Pula para o início da próxima palavra.
+
+    b — Volta para o início da palavra anterior.
+
+    0 — Vai para o início da linha.
+
+    $ — Vai para o fim da linha.
+
+    gg — Vai para o início do arquivo.
+
+    G — Vai para o fim do arquivo.
+
+2. Edição Eficiente (O "pulo do gato")
+
+    i — Entra no modo de Inserção.
+
+    o — Abre uma nova linha abaixo e entra no modo de inserção.
+
+    O — Abre uma nova linha acima.
+
+    x — Deleta o caractere sob o cursor.
+
+    dw — Deleta até o fim da palavra.
+
+    dd — Deleta a linha inteira.
+
+    yy — Copia (yank) a linha.
+
+    p — Cola (paste) depois do cursor.
+
+    u — Desfaz a última ação (Undo).
+
+    Ctrl + r — Refaz a ação (Redo).
+
+3. Busca e Substituição
+
+    /termo — Busca por "termo". Pressione n para a próxima ocorrência e N para a anterior.
+
+    :%s/antigo/novo/g — Substitui todas as ocorrências de "antigo" por "novo" no arquivo todo.
+
+    * — Busca a palavra que está sob o cursor.
+
+4. Comandos de Bloco (Modo Visual)
+
+    v — Inicia o modo visual (seleção de texto).
+
+    V — Seleciona a linha inteira.
+
+    Ctrl + v — Seleção em bloco vertical (perfeito para comentar várias linhas de código ao mesmo tempo).
+
+        Dica: Após selecionar verticalmente, aperte I, digite # (ou //), e aperte Esc. Ele comenta todas as linhas.
+
+5. Salvar e Sair
+
+    :w — Salva (write).
+
+    :q — Sai (quit).
+
+    :wq ou :x — Salva e sai.
+
+    :q! — Sai sem salvar as alterações.
+
+6. Para o seu Workflow (Múltiplos Arquivos)
+
+Como você gerencia infraestrutura e projetos Fullstack, alternar entre arquivos é essencial:
+
+    :e nome_do_arquivo — Abre um novo arquivo no buffer.
+
+    :vsp — Divide a tela verticalmente.
+
+    :sp — Divide a tela horizontalmente.
+
+    Ctrl + w seguido de uma seta (ou h,j,k,l) — Navega entre as janelas divididas.
