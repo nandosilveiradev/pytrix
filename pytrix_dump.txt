@@ -1,0 +1,1023 @@
+========================================
+FILE: ./pytrix_views/pytrix_view_select_language.py
+========================================
+# pytrix_views/pytrix_view_select_language.py
+from pytrix_views.pytrix_view_base import PytrixViewBase
+
+class PytrixViewSelectLanguage(PytrixViewBase):
+    """
+    Interface para seleção de idioma do ecossistema Pytrix.
+    Usa o padrão px_ para otimização de busca no LSP e Tabnine.
+    
+    Herda de: PytrixViewBase
+    Métodos Disponíveis:
+        - show_message(message: str) -> str
+        - show_error(error: str) -> str
+        - show_success(success: str) -> str
+        - show_menu(options: list, prompt: str) -> str
+        - show_value(msg: str) -> None
+    """
+    def __init__(self):
+        super().__init__()
+        # Identificador px_ para rastreabilidade e auditoria rápida
+        self.px_name: str = "PytrixViewSelectLanguage"
+        
+        # Se houver estados específicos da View, use o prefixo px_
+        # Exemplo: self.px_stats = True (herdado ou local)
+
+    # A View permanece "burra", herdando a lógica de exibição da Base,
+    # mas agora devidamente identificada no ecossistema Pytrix.-e 
+
+========================================
+FILE: ./pytrix_views/pytrix_view_base.py
+========================================
+# pytrix_views/pytrix_view_base.py
+import questionary
+
+class PytrixViewBase:
+    """
+    Classe base para todas as Views do ecossistema Pytrix.
+    Centraliza a interação CLI e padroniza o namespace px_.
+    """
+    def __init__(self):
+        # Atributo de estado global do framework
+        self.px_stats: bool = True
+        # Identificador base para auditoria
+        self.px_base_name: str = "PytrixViewBase"
+
+    def show_message(self, message: str) -> str:
+        """Retorna uma mensagem genérica formatada."""
+        return message
+
+    def show_error(self, error: str) -> str:
+        """Retorna uma mensagem de erro padronizada Pytrix."""
+        return f"[ERRO] {error}"
+
+    def show_success(self, success: str) -> str:
+        """Retorna uma mensagem de sucesso padronizada Pytrix."""
+        return f"[OK] {success}"
+
+    def show_menu(self, options: list, prompt: str) -> str:
+        """
+        Gera um menu interativo usando questionary.
+        Otimizado para o fluxo do Controller via self.px_view.
+        """
+        choice = questionary.select(
+            prompt,
+            choices=options
+        ).ask()
+        return choice
+
+    def show_value(self, msg: str) -> None:
+        """
+        Único ponto de saída de impressão direta no console.
+        Facilita o redirecionamento de logs ou auditoria de saída.
+        """
+        print(f"{msg}")-e 
+
+========================================
+FILE: ./pytrix_docker_up.sh
+========================================
+#!/bin/bash
+echo "🐳 Subindo ecossistema Pytrix via Docker..."
+
+# 1. Permissão no scriptdns
+if [ -f "pytrix_docker/dns/scriptdns.sh" ]; then
+    echo "🔧 Validando permissões no scriptdns..."
+    chmod +x pytrix_docker/dns/scriptdns.sh
+fi
+
+# 2. Sobe os containers com as variáveis carregadas no shell
+echo "🚀 Carregando variáveis e subindo containers..."
+
+# O comando 'export' garante que o Docker Compose veja as variáveis do arquivo
+export $(grep -v '^#' .pytrix_env | xargs)
+
+docker compose -f pytrix_docker_compose.yml up -d
+
+# 2. Primeira tentativa de subir
+docker compose -f pytrix_docker_compose.yml --env-file .pytrix_env up -d
+
+# 3. Status inicial
+echo "📊 Status atual:"
+docker compose -f pytrix_docker_compose.yml ps
+
+# 4. Aguarda negociação
+echo "⏳ Validando conexão com Cloudflare..."
+sleep 5
+
+# 5. Check de conexão e tentativa de ressubir se falhar
+if docker logs pytrix_tunnel 2>&1 | grep -q "Connected to GRU"; then
+    echo "🚀 Pytrix conectado ao Edge (GRU)!"
+    echo "🔗 https://pytrix.eu.org"
+else
+    echo "⚠️ Conexão não detectada. Tentando ressubir com env-file forçado..."
+    
+    # Para e sobe de novo garantindo o env-file
+    docker compose -f pytrix_docker_compose.yml --env-file .pytrix_env down
+    docker compose -f pytrix_docker_compose.yml --env-file .pytrix_env up -d
+    
+    echo "🔄 Comando de reinicialização enviado. Verifique os logs em instantes."
+fi-e 
+
+========================================
+FILE: ./pytrix_core.py
+========================================
+import os
+import subprocess
+
+def processar_comando(prompt):
+    # O teu prompt técnico + a tua regra de ouro
+    prompt = prompt + (
+        " monte um model de template que busca msg em um arquivo no modulo i18.i18n import I18N "
+        "que é um dicionário com base na chave digitada, como protocol, depois crie um arquivo "
+        "PytrixModelBase que herda esse protocolo. "
+        "regra não use comentários ou fale qualquer coisa, não preciso da sua eplicação apenas "
+        "mostre o que pedi, sem ser educado ou falar qualquer coisa. apenas coloque o código e "
+        "o nome do arquivo no final com base no que foi descrito da funcionalidade, pare de "
+        "comentar está atrapalhando nao quero que vc interaja só faça o pedido e na ultima linha "
+        "coloque o nome para o arquivo.py com base no conteúdo pedido coloque pytrix_ no começo "
+        "da sua sugestão de nome deixe na ultima linha"
+    )
+
+    ollama_bin = "/usr/local/bin/ollama"
+    cmd = [ollama_bin, "run", "llama3", prompt]
+    
+    try:
+        resultado = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', check=True)
+        out = resultado.stdout
+        linhas = [l for l in out.strip().split('\n') if l.strip()]
+        
+        if not linhas:
+            return None
+
+        ultima_linha = linhas[-1].strip()
+        
+        # Filtro Anti-Erro (o teu original funcional)
+        if " " in ultima_linha or "(" in ultima_linha or ":" in ultima_linha:
+            nome_arquivo = "pytrix_script_gerado.py"
+            conteudo = "\n".join(linhas).replace("```python", "").replace("```", "").strip()
+        else:
+            nome_arquivo = ultima_linha
+            conteudo = "\n".join(linhas[:-1]).replace("```python", "").replace("```", "").strip()
+
+        os.makedirs("/root/projetos", exist_ok=True)
+        caminho_final = os.path.join("/root/projetos", nome_arquivo)
+        
+        with open(caminho_final, "w", encoding="utf-8") as f:
+            f.write(conteudo)
+            
+        return nome_arquivo
+
+    except Exception as e:
+        print(f"❌ Erro: {e}")
+        return None-e 
+
+========================================
+FILE: ./pytrix_prefab_class.py
+========================================
+import os
+import sys
+from textwrap import dedent
+
+
+# Usamos dedent para que você possa indentar o código aqui no editor
+# mas ele remova os espaços extras na hora de gravar o arquivo.
+
+def create_mvc_prefab(name):
+    name_lower = name.lower()
+    name_camel = name.capitalize()
+
+    # Configuração de caminhos baseada no seu 'tree'
+    folders = ['models', 'controllers', 'views']
+    
+    
+
+    templates = {
+        "models": dedent(f"""\
+            from .pytrix_models.model_base import ModelBase
+
+            class Model{name_camel}(ModelBase):
+                def __init__(self):
+                    super().__init__()
+                    self.table = '{name_lower}s'
+            """),
+
+        "controllers": dedent(f"""\
+            from .pytrix_controllers.controller_base import ControllerBase
+
+            class Controller{name_camel}(ControllerBase):
+                def __init__(self, model, view):
+                    self.model = model
+                    self.view = view
+            """),
+
+        "views": dedent(f"""\
+            from .pytrix_views.view_base import ViewBase
+
+            class View{name_camel}(ViewBase):
+                super().__init__()
+                
+            """)
+    }
+
+    for folder in folders:
+        prefix = "model_" if folder == "models" else "controllers_" if folder == "controllers" else "view_"
+        filename = f"{folder}/{prefix}{name_lower}.py"
+        
+        if not os.path.exists(filename):
+            with open(filename, "w") as f:
+                f.write(templates[folder])
+            print(f"✅ Criado: {filename}")
+        else:
+            print(f"⚠️  Arquivo já existe: {filename}")
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        create_mvc_prefab(sys.argv[1])
+    else:
+        print("Uso: python3 pyclass_prefab.py NomeDaClasse")
+-e 
+
+========================================
+FILE: ./pytrix_fast_dump.sh
+========================================
+#!/bin/bash
+
+# Define o arquivo de saída
+OUTPUT="sistema_pytrix_dump.txt"
+
+echo "Gerando dump do código fonte (ignoring junk)..."
+
+# Limpa o arquivo se já existir
+> "$OUTPUT"
+
+# Busca arquivos .py e .sh ignorando pastas de lixo
+find . -type f \( -name "*.py" -o -name "*.sh" \) \
+    -not -path "*/.*" \
+    -not -path "*/venv/*" \
+    -not -path "*/pytrix_venv/*" \
+    -not -path "*/__pycache__/*" \
+    -not -path "*/node_modules/*" \
+    -exec sh -c '
+        for file; do
+            echo "========================================" >> "'$OUTPUT'"
+            echo "FILE: $file" >> "'$OUTPUT'"
+            echo "========================================" >> "'$OUTPUT'"
+            # sed remove linhas em branco repetidas para encurtar o texto
+            sed "/^$/d" "$file" >> "'$OUTPUT'"
+            echo -e "\n" >> "'$OUTPUT'"
+        done
+    ' sh {} +
+
+echo "Pronto! O código limpo está em: $OUTPUT"
+echo "Dica: Use 'cat $OUTPUT | xclip -sel clip' para copiar tudo de uma vez."
+-e 
+
+========================================
+FILE: ./pytrix_controllers/pytrix_controllers_select_language.py
+========================================
+# pytrix_controllers/pytrix_controller_select_language.py
+from pytrix_models.pytrix_model_select_language import PytrixModelSelectLanguage
+from pytrix_views.pytrix_view_select_language import PytrixViewSelectLanguage
+
+class PytrixControllerSelectLanguage:
+    """
+    Controller de orquestração para seleção de idioma Pytrix.
+    Usa o padrão de variáveis px_ para otimização de fluxo interno e LSP.
+
+    Herda de: Prefab MVC Pytrix
+    Integração:
+        - self.px_model: PytrixModelSelectLanguage
+        - self.px_view: PytrixViewSelectLanguage
+
+    Retorno:
+        - px_lang_iso: String do idioma selecionado (ex: 'pt')
+    """
+    def __init__(self):
+        print("PytrixControllersSelectLanguage Carregado")
+
+        # Instâncias com prefixo px_ para acesso ultra-rápido via autocomplete
+        self.px_model: PytrixModelSelectLanguage = PytrixModelSelectLanguage()
+        print("pytrix_model_select Carregado")
+
+        self.px_view: PytrixViewSelectLanguage = PytrixViewSelectLanguage()
+
+        # Atributos de estado interno protegidos
+        self.px_lang_raw: str = ""
+        self.px_lang_iso: str = ""
+
+    def run(self) -> str:
+        """
+        Executa o fluxo visual de seleção. 
+        Acesso direto aos atributos px_ do model economiza ciclos de busca.
+        """
+        # Exibe o identificador do bloco (referência direta na memória)
+        self.px_view.show_value(self.px_model.px_bloco)
+
+        # Itera sobre mensagens de boas-vindas
+        for msg in self.px_model.get_intro():
+            self.px_view.show_value(msg)
+
+        # Itera sobre os prompts de orientação
+        for msg in self.px_model.get_prompt():
+            self.px_view.show_value(msg)
+
+        # Dispara o menu CLI (Questionary)
+        # O autocomplete do LSP vai sugerir px_labels e px_arrow instantaneamente
+        self.px_lang_raw = self.px_view.show_menu(
+            self.px_model.px_labels,
+            " | ".join(self.px_model.px_arrow)
+        )
+
+        # Define o idioma no Model e captura o código final
+        self.px_lang_iso = self.px_model.set_lang(self.px_lang_raw)
+        return self.px_lang_iso-e 
+
+========================================
+FILE: ./pytrix_utils/pytrix_tmux_controller.py
+========================================
+import os
+import subprocess
+import sys
+
+SESSION_NAME = "PytrixTmuxEnv"
+
+def ensure_tmux_installed():
+    try:
+        subprocess.run(["tmux", "-V"], check=True, capture_output=True)
+    except Exception:
+        print("tmux não encontrado. Instale com:")
+        print("sudo apt-get update && sudo apt-get install -y tmux")
+        sys.exit(1)
+
+def start_or_attach_session():
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(project_root, "..", ".config", "tmuxPythonMVC.conf")
+    script_path = os.path.join(project_root, "..", "app.py")
+
+    result = subprocess.run(["tmux", "has-session", "-t", SESSION_NAME], capture_output=True)
+
+    if result.returncode != 0:
+        subprocess.run([
+            "tmux", "new-session", "-d", "-s", SESSION_NAME, "-n", "app",
+            f"bash -c 'tmux source-file {config_path}; docker-compose up -d; exec python3 {script_path} --inside-tmux'"
+        ], check=True)
+
+        subprocess.run([
+            "tmux", "new-window", "-t", f"{SESSION_NAME}:1", "-n", "logs",
+            "bash -c 'tail -f logs/app.log || echo "Nenhum log disponível"'"
+        ], check=True)
+
+    subprocess.run(["tmux", "attach", "-t", SESSION_NAME], check=True)
+-e 
+
+========================================
+FILE: ./pytrix_build_docs.py
+========================================
+import pdoc
+from pathlib import Path
+import sys
+import os
+
+def generate_docs():
+    # Garante que o diretório atual está no PATH do Python
+    current_dir = Path(__file__).parent.absolute()
+    sys.path.append(str(current_dir))
+    
+    output_dir = current_dir / "docs"
+    
+    # Configurações para evitar erro de browser e focar nos arquivos locais
+    try:
+        # Mudamos de '.' para o nome da pasta ou lista de arquivos
+        pdoc.pdoc(current_dir, output_directory=output_dir)
+        print(f"✅ Sucesso! Documentação gerada em: {output_dir}")
+    except Exception as e:
+        print(f"❌ Erro ao gerar documentação: {e}")
+        print("\n💡 Dica: Verifique se o arquivo 'app.py' tem erros de sintaxe")
+        print("ou se você esqueceu de instalar alguma dependência que o 'app' usa.")
+
+if __name__ == "__main__":
+    generate_docs()
+
+
+
+
+
+-e 
+
+========================================
+FILE: ./pytrix_prefab_mvc_i18n.py
+========================================
+import os
+import sys
+
+def create_i18n_tuple_logic(name_lower):
+    """
+    Cria o I18N modular usando Tuplas para garantir a ordem das escolhas
+    e chaves mágicas para acesso tipado.
+    """
+    path = f"pytrix_i18n/pytrix_i18n_{name_lower}.py"
+    name_camel = name_lower.capitalize()
+    
+    content = f"""# Pytrix I18N Modular: {name_camel}
+
+# Tupla Soberana: Define a ordem imutável das escolhas/labels
+CHOICES_LABELS = (
+    "Iniciar Processo",
+    "Configurações",
+    "Sair",
+)
+
+class PytrixKeys{name_camel}:
+    \"\"\"Acessa as chaves pela ordem da tupla (Key Mágica).\"\"\"
+    # O índice na tupla é a nossa regra de ouro
+    START = 0
+    CONFIG = 1
+    EXIT = 2
+    
+    @classmethod
+    def get_label(cls, key_index: int) -> str:
+        return CHOICES_LABELS[key_index]
+
+# Dicionário de mensagens de apoio
+pytrix_i18n_{name_lower} = {{
+    "ask_init": f"Selecione uma opção para {name_camel}:",
+    "error": "Opção inválida selecionada.",
+}}
+"""
+    if not os.path.exists(path):
+        os.makedirs("pytrix_i18n", exist_ok=True)
+        with open(path, "w") as f:
+            f.write(content)
+        print(f"🌐 I18N (Tupla + Keys) criado: {path}")
+
+def pytrix_prefab_mvc(name):
+    name_lower = name.lower()
+    name_camel = name.capitalize()
+    
+    create_i18n_tuple_logic(name_lower)
+
+    # Template do Model consumindo a lógica de Tupla
+    model_template = f"""from pytrix_models.pytrix_model_base import PytrixModelBase
+from pytrix_i18n.pytrix_i18n_{name_lower} import pytrix_i18n_{name_lower}, PytrixKeys{name_camel}, CHOICES_LABELS
+
+class PytrixModel{name_camel}(PytrixModelBase):
+    def __init__(self):
+        super().__init__()
+        self.px_name: str = "PytrixModel{name_camel}"
+        
+        # Dados do I18N
+        self.px_i18n = pytrix_i18n_{name_lower}
+        self.px_keys = PytrixKeys{name_camel}
+        
+        # Referência para o Menu (sempre na ordem da tupla)
+        self.px_labels = CHOICES_LABELS
+        self.px_bloco = self.px_i18n.get("ask_init")
+
+    def get_choice_text(self, index: int):
+        return self.px_keys.get_label(index)
+"""
+
+    # ... (Geração de Controller e View mantendo o padrão px_)
+    
+    model_path = f"pytrix_models/pytrix_model_{name_lower}.py"
+    with open(model_path, "w") as f:
+        f.write(model_template)
+    print(f"✅ Model (Tupla Logic) Forjado: {model_path}")
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        pytrix_prefab_mvc(sys.argv[1])-e 
+
+========================================
+FILE: ./pytrix_prefab_mv.py
+========================================
+import os
+import sys
+
+def pytrix_prefab_mvc(name):
+    name_lower = name.lower()
+    name_camel = name.capitalize()
+
+    # Pastas seguindo a estrutura real do seu projeto
+    folders = ['pytrix_models', 'pytrix_controllers', 'pytrix_views']
+    
+    templates = {
+        "pytrix_models": f"""from pytrix_models.pytrix_model_base import PytrixModelBase
+
+class PytrixModel{name_camel}(PytrixModelBase):
+    \"\"\"
+    Modelo especializado para {name_camel}.
+    Usa o padrão px_ para indexação via LSP.
+    \"\"\"
+    def __init__(self):
+        super().__init__()
+        self.px_name: str = "PytrixModel{name_camel}"
+        
+        # Importação local do I18N para manter a performance
+        from pytrix_i18n.i18n import I18N
+        self.px_bloco: str = I18N.get("{name_lower}_block", "Pytrix_Default_Block")""",
+        
+        "pytrix_controllers": f"""from pytrix_models.pytrix_model_{name_lower} import PytrixModel{name_camel}
+from pytrix_views.pytrix_view_{name_lower} import PytrixView{name_camel}
+
+class PytrixController{name_camel}:
+    \"\"\"
+    Controller de orquestração para {name_camel}.
+    Instâncias px_ para acesso ultra-rápido via autocomplete.
+    \"\"\"
+    def __init__(self):
+        self.px_model: PytrixModel{name_camel} = PytrixModel{name_camel}()
+        self.px_view: PytrixView{name_camel} = PytrixView{name_camel}()
+
+    def run(self) -> bool:
+        # Segue a filosofia do SelectLanguage
+        self.px_view.show_value(self.px_model.px_bloco)
+        return True""",
+        
+        "pytrix_views": f"""from pytrix_views.pytrix_view_base import PytrixViewBase
+
+class PytrixView{name_camel}(PytrixViewBase):
+    \"\"\"
+    Interface para {name_camel}.
+    Herda de: PytrixViewBase
+    \"\"\"
+    def __init__(self):
+        super().__init__()
+        self.px_name: str = "PytrixView{name_camel}" """
+    }
+
+    for folder in folders:
+        # Ajuste dos prefixos de arquivo conforme o seu padrão
+        if "models" in folder:
+            prefix = "pytrix_model_"
+        elif "controllers" in folder:
+            prefix = "pytrix_controller_"
+        else:
+            prefix = "pytrix_view_"
+            
+        filename = f"{folder}/{prefix}{name_lower}.py"
+        
+        if not os.path.exists(filename):
+            # Garante que a pasta existe antes de criar o arquivo
+            os.makedirs(folder, exist_ok=True)
+            with open(filename, "w") as f:
+                f.write(templates[folder])
+            print(f"✅ Forjado: {filename}")
+        else:
+            print(f"⚠️  Soberania mantida: {filename} já existe.")
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        pytrix_prefab_mvc(sys.argv[1])
+    else:
+        print("Uso: python3 pytrix_prefab.py NomeDoMódulo")-e 
+
+========================================
+FILE: ./pytrix_gerar_dump_code.sh
+========================================
+find . -type f \( -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.md" \) \
+    -not -path "*/pytrix_venv/*" \
+    -not -path "*/venv/*" \
+    -not -path "*/__pycache__/*" \
+    -not -path "*/data/*" \
+    -not -path "*/docs/*" \
+    -not -path "*/web/*" \
+    -not -path "*/letsencrypt/*" \
+    -name "pytrix_*" \
+    -exec sh -c '
+        for file; do
+            echo "========================================"
+            echo "FILE: $file"
+            echo "========================================"
+            cat "$file"
+            echo -e "\n"
+        done
+    ' sh {} + > pytrix_dump.txt
+
+echo "✅ dump gerado em pytrix_dump.txt"-e 
+
+========================================
+FILE: ./pytrix_clean.sh
+========================================
+#!/bin/bash
+
+# Pytrix Trash Collector
+# Focado em limpar resíduos de refatoração e arquivos temporários
+
+echo "🧹 Iniciando limpeza de tralha no ecossistema Pytrix..."
+
+# 1. Removendo __pycache__ recursivamente (O comando que você pediu)
+# Essencial para eliminar bytecodes de arquivos que mudaram de nome
+find . -name "__pycache__" -type d -exec rm -rf {} +
+
+# 2. Removendo resíduos de testes e build do pytest/tox
+if [ -d ".pytest_cache" ]; then rm -rf .pytest_cache; fi
+if [ -d ".tox" ]; then rm -rf .tox; fi
+
+# 3. Removendo arquivos temporários de edição (se houver)
+find . -name "*.tmp" -type f -delete
+find . -name "*.bak" -type f -delete
+
+# 4. Limpeza de metadados de builds anteriores da documentação
+# (Opcional: limpa a pasta de docs antes de gerar uma nova)
+if [ -d "pytrix_docs/pytrix" ]; then
+    echo "📚 Limpando documentação antiga..."
+    rm -rf pytrix_docs/pytrix
+fi
+
+echo "✨ Tudo limpo! Ambiente pronto para o novo push."
+
+-e 
+
+========================================
+FILE: ./pytrix_i18n/pytrix_i18n_--name.py
+========================================
+# Pytrix I18N Modular: --name
+
+# Tupla Soberana: Define a ordem imutável das escolhas/labels
+CHOICES_LABELS = (
+    "Iniciar Processo",
+    "Configurações",
+    "Sair",
+)
+
+class PytrixKeys--name:
+    """Acessa as chaves pela ordem da tupla (Key Mágica)."""
+    # O índice na tupla é a nossa regra de ouro
+    START = 0
+    CONFIG = 1
+    EXIT = 2
+    
+    @classmethod
+    def get_label(cls, key_index: int) -> str:
+        return CHOICES_LABELS[key_index]
+
+# Dicionário de mensagens de apoio
+pytrix_i18n_--name = {
+    "ask_init": f"Selecione uma opção para --name:",
+    "error": "Opção inválida selecionada.",
+}
+-e 
+
+========================================
+FILE: ./pytrix_ram_sniffer.py
+========================================
+#pytrix_ram_sniffer.py
+import os
+import re
+
+def ram_to_file(pid, output_file):
+    maps_path = f"/proc/{pid}/maps"
+    mem_path = f"/proc/{pid}/mem"
+    
+    try:
+        with open(maps_path, 'r') as maps_file:
+            with open(mem_path, 'rb', 0) as mem_file:
+                with open(output_file, 'w') as out:
+                    for line in maps_file.readlines():
+                        if 'rw-p' in line:
+                            parts = line.split()
+                            start, end = [int(x, 16) for x in parts[0].split('-')]
+                            mem_file.seek(start)
+                            try:
+                                chunk = mem_file.read(end - start)
+                                strings = re.findall(b'[\x20-\x7E]{10,}', chunk)
+                                for s in strings:
+                                    out.write(s.decode('utf-8', errors='ignore') + '\n')
+                            except: continue
+        print(f"✅ Dump concluído: {output_file}")
+    except PermissionError:
+        print("❌ Roda como root, patrão!")
+
+# pgrep ollama pra pegar o PID-e 
+
+========================================
+FILE: ./pytrix_docker_compose.yml
+========================================
+networks:
+  pytrix_network:
+    name: pytrix_network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+services:
+  # Ambiente de Desenvolvimento (Apenas o core do Pytrix)
+  pytrix:
+    build:
+      context: .
+      dockerfile: pytrix_docker/Dockerfile.dev
+    container_name: pytrix_dev_env
+    restart: always
+    env_file: .pytrix_env
+    ports:
+      - "${SSH_PORT:-2222}:22"
+      - "3000:3000"
+    networks:
+      pytrix_network:
+        ipv4_address: 172.20.0.10
+    volumes:
+      - .:/home/${DEV_USER:-developer}/pytrix
+      - .ssh_cache:/home/${DEV_USER:-developer}/.ssh
+    stdin_open: true
+    tty: true
+    entrypoint: ["/bin/bash"]
+
+  # Servidor de Arquivos Estáticos (Nginx)
+  pytrix_web_static:
+    image: nginx:alpine
+    container_name: pytrix_static
+    restart: always
+    ports:
+      - "8080:80"
+    networks:
+      pytrix_network:
+        ipv4_address: 172.20.0.20
+    volumes:
+      - ./pytrix_web_static:/usr/share/nginx/html:ro
+
+
+
+
+-e 
+
+========================================
+FILE: ./pytrix_forge_utils.py
+========================================
+#!/bin/bash
+
+# --- CONFIGURAÇÕES SOBERANAS ---
+ADMIN_NAME="Fernando Silveira"
+ADMIN_EMAIL="fernandosilveiradev@gmail.com"
+OFFICIAL_REMOTE="github.com/nandosilveira/pytrix"
+
+APP_NAME=$1
+TARGET_DIR="pytrix_utils/$APP_NAME"
+FORGE_BRANCH="forge/${APP_NAME}_$(date +%s)" # ID único para a branch de build
+
+if [ -z "$APP_NAME" ]; then
+    echo "❌ ERRO: ./pytrix_forge.sh nome_do_app"
+    exit 1
+fi
+
+# --- 0. A RAIZ DA FORJA (Criação do ambiente isolado) ---
+git checkout main
+git pull origin main
+git checkout -b "$FORGE_BRANCH"
+
+echo "🏗️  FORJANDO EM BRANCH ISOLADA: $FORGE_BRANCH"
+
+# --- 1. TRAVA DE SOBERANIA ---
+if [[ $(git config user.name) != "$ADMIN_NAME" ]]; then
+    git config --local user.name "$ADMIN_NAME"
+    git config --local user.email "$ADMIN_EMAIL"
+fi
+
+# --- 2. O TRANSPLANTE & 3. O LOG DE NASCIMENTO ---
+mkdir -p "$TARGET_DIR"
+mv pytrix_models pytrix_views pytrix_i18n pytrix_controllers "$TARGET_DIR/"
+mv pytrix.py "$TARGET_DIR/${APP_NAME}.py"
+
+LOG_FILE="$TARGET_DIR/pytrix_forge.log"
+{
+    echo "APP: $APP_NAME"
+    echo "DATA/HORA: $(date '+%d/%m/%Y %H:%M:%S')"
+    echo "BRANCH DE ORIGEM: $FORGE_BRANCH"
+    echo "FORJADOR: $(git config user.name)"
+} > "$LOG_FILE"
+
+# --- 4. SCANNER DE DNA & 5. O EXTERMÍNIO ---
+TEMP_LIST=$(mktemp)
+grep -E "^(from|import) pytrix_" "$TARGET_DIR/${APP_NAME}.py" | while read -r linha; do
+    modulo=$(echo "$linha" | awk '{print $2}')
+    echo "$modulo" | tr '.' '/' | sed 's/$/.py/' >> "$TEMP_LIST"
+done
+
+find "$TARGET_DIR" -type f -name "*.py" | while read -r arquivo; do
+    nome_base=$(basename "$arquivo")
+    if [[ "$nome_base" == "${APP_NAME}.py" || "$nome_base" == "__init__.py" || "$nome_base" == "pytrix_forge.log" ]]; then
+        continue
+    fi
+    path_limpo=$(echo "$arquivo" | sed "s|$TARGET_DIR/||")
+    if ! grep -q "$path_limpo" "$TEMP_LIST"; then
+        rm "$arquivo"
+    fi
+done
+
+# --- 6. FINALIZAÇÃO ---
+find "$TARGET_DIR" -type d -empty -delete
+sed -i "s/from pytrix_/from .pytrix_/g" "$TARGET_DIR/${APP_NAME}.py"
+rm "$TEMP_LIST"
+
+# --- 7. O PUSH DA BRANCH DE FORJA ---
+git add "$TARGET_DIR"
+git commit -m "forge: $APP_NAME ($ADMIN_NAME)"
+git push origin "$FORGE_BRANCH"
+
+echo "✅ Forja concluída na branch $FORGE_BRANCH"
+echo "💡 Agora você pode fazer o Merge ou fechar o PR para a Main."
+
+
+
+
+
+
+
+
+
+
+
+
+-e 
+
+========================================
+FILE: ./pytrix_prefab_components.py
+========================================
+# pyprefab_components.py (Raiz do projeto)
+
+def generate_column(span=1, content=""):
+    """Gera uma div de coluna baseada no grid de 12"""
+    # Ex: span 3 = 25% da tela (estilo Photoshop)
+    return f'<div style="grid-column: span {span} / span {span};">{content}</div>'
+
+def generate_h1(text, classes=""):
+    """Componente H1 com padrão GitHub (Primer Design)"""
+    # Borda inferior fina e espaçamento clássico do GitHub
+    return f'<h1 class="text-2xl font-semibold border-b border-[#d0d7de] pb-2 mb-4 {classes}">{text}</h1>'
+
+# Exemplo de chamada via CLI no Debian:
+# python3 pyprefab_components.py --h1 "Configurações de Idioma"
+
+-e 
+
+========================================
+FILE: ./pytrix_models/pytrix_model_base.py
+========================================
+# pytrix_models/pytrix_model_base.py
+from pytrix_i18n.i18n import I18N
+
+class PytrixModelBase:
+    """
+    Classe base para modelos Pytrix. 
+    Usa o prefixo px_ para garantir fluxo interno rápido e evitar colisões.
+    """
+    def __init__(self):
+        # Identidade e Estado com prefixo px_
+        self.px_obj = PytrixModelBase
+        self.px_lang: str | None = None
+        
+        # Atributos PX vinculados diretamente às referências do I18N
+        self.px_hello: dict = I18N.get("hello", {})
+        self.px_prompt: dict = I18N.get("language_prompt", {}) 
+        self.px_arrow: dict = I18N.get("arrow_instructions", {}) 
+        self.px_labels: list[str] = I18N.get("language_choices_labels", [])
+        self.px_codes: list[str] = I18N.get("language_choices_codes", [])
+
+    def __str__(self):
+        return f"PytrixModelBase instance"
+
+    def set_lang(self, choice: str) -> str:
+        """Mapeia a label selecionada para o código ISO e define px_lang."""
+        mapping = dict(zip(self.px_labels, self.px_codes))
+        self.px_lang = mapping.get(choice)
+        if not self.px_lang:
+            self.px_lang = "pt"  # Fallback seguro
+        return self.px_lang
+
+    def get_intro(self) -> str | list[str]:
+        """Retorna saudações no idioma atual ou todas as disponíveis."""
+        return self.px_hello.get(self.px_lang, list(self.px_hello.values()))
+
+    def get_prompt(self) -> str | list[str]:
+        """Retorna o prompt localizado para seleção."""
+        return self.px_prompt.get(self.px_lang, list(self.px_prompt.values()))
+
+    def get_arrow(self) -> str | list[str]:
+        """Retorna instruções de navegação localizadas."""
+        return self.px_arrow.get(self.px_lang, list(self.px_arrow.values()))
+
+    def get_languages(self) -> list[str]:
+        """Lista de labels para o menu CLI (Questionary)."""
+        return self.px_labels
+
+    def get_localized_text(self, key: str) -> str:
+        """Busca qualquer chave no I18N usando o estado px_lang."""
+        return I18N.get(key, {}).get(self.px_lang)-e 
+
+========================================
+FILE: ./pytrix_models/pytrix_model_--name.py
+========================================
+from pytrix_models.pytrix_model_base import PytrixModelBase
+from pytrix_i18n.pytrix_i18n_--name import pytrix_i18n_--name, PytrixKeys--name, CHOICES_LABELS
+
+class PytrixModel--name(PytrixModelBase):
+    def __init__(self):
+        super().__init__()
+        self.px_name: str = "PytrixModel--name"
+        
+        # Dados do I18N
+        self.px_i18n = pytrix_i18n_--name
+        self.px_keys = PytrixKeys--name
+        
+        # Referência para o Menu (sempre na ordem da tupla)
+        self.px_labels = CHOICES_LABELS
+        self.px_bloco = self.px_i18n.get("ask_init")
+
+    def get_choice_text(self, index: int):
+        return self.px_keys.get_label(index)
+-e 
+
+========================================
+FILE: ./pytrix_models/pytrix_model_select_language.py
+========================================
+# pytrix_models/pytrix_model_select_language.py
+from pytrix_models.pytrix_model_base import PytrixModelBase
+
+class PytrixModelSelectLanguage(PytrixModelBase):
+    """
+    Modelo especializado na gestão de idiomas do ecossistema Pytrix.
+    Utiliza o padrão px_ para otimização de fluxo interno e indexação via LSP.
+    
+    Herda de: PytrixModelBase
+    """
+    def __init__(self):
+        # Inicializa a base que já prepara o acesso ao I18N
+        super().__init__() 
+        
+        # Identificador de classe para auditoria de estado
+        self.px_name: str = "PytrixModelSelectLanguage"
+        
+        # Estado local de idioma (ISO Code)
+        self.px_lang: str | None = None
+        
+        # Importação local do I18N para mapeamento das chaves do Prefab
+        from pytrix_i18n.i18n import I18N
+        
+        # Mapeamento para o namespace px_ (acesso ultra-rápido por referência)
+        self.px_bloco: str = I18N.get("bloco", "Pytrix_Default_Block")
+        self.px_hello: dict = I18N.get("hello", {})
+        self.px_prompt: dict = I18N.get("language_prompt", {})
+        self.px_arrow: dict = I18N.get("arrow_instructions", {})
+        self.px_codes: list[str] = I18N.get("language_choices_codes", [])
+        self.px_labels: list[str] = I18N.get("language_choices_labels", [])
+
+    # Os métodos get_intro, get_prompt, etc., herdados da Base 
+    # já utilizam esses atributos px_ internamente.-e 
+
+========================================
+FILE: ./pytrix_speaker_mode.py
+========================================
+from faster_whisper import WhisperModel
+import speech_recognition as sr
+
+# Carrega o modelo (o 'tiny' é instantâneo para comandos de voz)
+model_size = "tiny"
+model = WhisperModel(model_size, device="cpu", compute_type="int8")
+
+def ouvir_jarvis():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("🎤 Jarvis ouvindo...")
+        audio = r.listen(source)
+        
+    # Salva o áudio temporariamente na RAM (/dev/shm) para ser rápido
+    with open("/dev/shm/temp_audio.wav", "wb") as f:
+        f.write(audio.get_wav_data())
+
+    segments, _ = model.transcribe("/dev/shm/temp_audio.wav", beam_size=5)
+    texto = " ".join([segment.text for segment in segments])
+    return texto
+
+# Agora é só jogar o 'texto' para a função do Pytrix que a gente criou!-e 
+
+========================================
+FILE: ./pytrix_tunnel_subprocess.py
+========================================
+import subprocess
+import time
+
+def iniciar_tunel():
+    # Exemplo usando Cloudflared ou Ngrok (ajuste para o seu comando de túnel)
+    print("🌐 Subindo o túnel de conexão...")
+    comando_tunel = ["cloudflared", "tunnel", "--url", "http://localhost:8080"] 
+    
+    # Popen não bloqueia o script, ele roda em paralelo
+    tunel = subprocess.Popen(comando_tunel, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return tunel
+
+if __name__ == "__main__":
+    processo_tunel = iniciar_tunel()
+    time.sleep(5) # Dá um respiro pro túnel estabilizar
+    
+    try:
+        # Aqui entra sua lógica de rodar a live (o loop que já montamos)
+        print("🚀 Rodando script principal...")
+        # rodar_bloco_live() 
+        
+    except KeyboardInterrupt:
+        print("\n🛑 Encerrando tudo...")
+        processo_tunel.terminate() # Mata o túnel ao sair-e 
+

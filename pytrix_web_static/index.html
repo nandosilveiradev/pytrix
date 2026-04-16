@@ -1,1 +1,258 @@
-<h1>Pytrix Static Engine - Jacarei/SP</h1><p>Status: Online via Cloudflare Tunnel</p>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fernando Silveira | Senior Fullstack & CTO</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --card: rgba(10, 10, 10, 0.9); /* Leve transparência para ver o fundo */
+            --accent: #00ff41; 
+            --accent-dim: #003b00;
+            --text: #d1d1d1;
+            --text-dim: #888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* CONFIGURAÇÃO DO FUNDO MATRIX */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Fica atrás de tudo */
+            opacity: 0.15; /* Ajuste aqui para deixar a chuva mais forte ou fraca */
+        }
+
+        .mono { font-family: 'Fira Code', monospace; }
+
+        nav { 
+            padding: 1.5rem 10%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid var(--accent-dim); 
+            position: sticky; 
+            top: 0; 
+            background: rgba(5, 5, 5, 0.9); 
+            backdrop-filter: blur(10px); 
+            z-index: 1000; 
+        }
+        
+        .logo { font-weight: 700; color: var(--accent); letter-spacing: -1px; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { font-size: 0.85rem; text-transform: uppercase; color: var(--text-dim); }
+        .nav-links a:hover { color: var(--accent); text-shadow: 0 0 8px var(--accent); }
+
+        .hero { padding: 6rem 10%; display: flex; align-items: center; gap: 4rem; min-height: 85vh; position: relative; }
+        .hero-img img { 
+            width: 320px; height: 320px; 
+            border-radius: 4px; 
+            border: 1px solid var(--accent); 
+            filter: grayscale(100%) brightness(0.8);
+            box-shadow: 0 0 20px var(--accent-dim);
+        }
+        
+        .hero-content h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem; color: #fff; text-shadow: 2px 2px 4px #000; }
+        .hero-content h2 { color: var(--accent); font-family: 'Fira Code', monospace; margin-bottom: 1.5rem; background: rgba(0,0,0,0.5); display: inline-block; padding: 2px 8px; }
+
+        .section { padding: 4rem 10%; position: relative; }
+        .section-title { 
+            font-size: 1.8rem; 
+            margin-bottom: 3rem; 
+            color: var(--accent); 
+            text-transform: uppercase;
+            font-family: 'Fira Code', monospace;
+            border-bottom: 1px solid var(--accent-dim);
+            padding-bottom: 0.5rem;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        
+        .card { 
+            background: var(--card); 
+            padding: 2rem; 
+            border: 1px solid #222; 
+            backdrop-filter: blur(2px);
+            transition: 0.3s;
+        }
+        .card:hover { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tag { 
+            display: inline-block; 
+            border: 1px solid var(--accent-dim);
+            color: var(--accent); 
+            padding: 0.1rem 0.5rem; 
+            font-size: 0.7rem; 
+            margin-top: 1rem; margin-right: 0.4rem; 
+            font-family: 'Fira Code', monospace; 
+        }
+
+        .whatsapp-btn { 
+            display: inline-block; 
+            background: transparent; 
+            border: 1px solid var(--accent); 
+            color: var(--accent); 
+            padding: 1rem 2rem; 
+            font-family: 'Fira Code', monospace;
+            margin-top: 2rem;
+            text-transform: uppercase;
+        }
+        .whatsapp-btn:hover { background: var(--accent); color: #000; font-weight: bold; box-shadow: 0 0 20px var(--accent); }
+
+        footer { padding: 4rem 10%; text-align: center; border-top: 1px solid var(--accent-dim); color: #444; background: var(--bg); }
+
+        @media (max-width: 1000px) {
+            .hero { flex-direction: column; text-align: center; padding: 4rem 5%; }
+            .hero-content h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<nav class="mono">
+    <div class="logo">F_SILVEIRA.SYS [v3.13]</div>
+    <ul class="nav-links">
+        <li><a href="#core">Core</a></li>
+        <li><a href="#sistemas">Sistemas</a></li>
+        <li><a href="#infra">Infra</a></li>
+        <li><a href="#contato">Contato</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+    <div class="hero-img">
+        <img src="Foto-Fernando-Silveira-dev.png" alt="Fernando Silveira">
+    </div>
+    <div class="hero-content">
+        <h2 class="mono">// SENIOR FULLSTACK & CTO</h2>
+        <h1>Otimização absoluta através da automação.</h1>
+        <p>Especialista em converter infraestrutura física e fluxos comerciais complexos em arquiteturas de software de alta performance.</p>
+    </div>
+</section>
+
+<section class="section" id="core">
+    <h2 class="section-title">Core Competencies</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Engenharia de Performance</h3>
+            <p>Expertise forjada na otimização de hardware crítico. Gestão agressiva de recursos, tuning de Kernel Debian e ambientes Docker imutáveis.</p>
+            <div class="tag">Debian</div><div class="tag">Docker</div><div class="tag">Low-Level</div>
+        </div>
+        <div class="card">
+            <h3>Creative Technologist</h3>
+            <p>Domínio do pipeline visual: do design (Adobe Suite) e modelagem 3D (Blender) à integração em engines (Godot/Unreal).</p>
+            <div class="tag">Blender</div><div class="tag">Post-Prod</div><div class="tag">Design System</div>
+        </div>
+        <div class="card">
+            <h3>Arquitetura Pedagógica</h3>
+            <p>Ex-instrutor de TI. Especialista em traduzir documentações densas em fluxos de trabalho comerciais escaláveis e independentes.</p>
+            <div class="tag">Technical Leadership</div><div class="tag">Documentation</div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="sistemas">
+    <h2 class="section-title">Sistemas Ativos</h2>
+    <div class="grid">
+        <div class="card" style="border-top: 3px solid var(--accent);">
+            <h3>AIFTPD (Content Engine)</h3>
+            <p>Pipeline industrial de mídia: Automação completa de ingestão de dados, renderização distribuída e locução via AI para e-commerce.</p>
+            <div class="tag">Python 3.13</div><div class="tag">FFmpeg</div><div class="tag">PostgreSQL</div>
+        </div>
+        <div class="card">
+            <h3>Entity SQL Terminal</h3>
+            <p>Acelerador de DX: Modelagem iterativa de entidades com aplicação nativa de formas de normalização (1FN - BCNF) via CLI.</p>
+            <div class="tag">CLI Tool</div><div class="tag">Database Design</div><div class="tag">MVC</div>
+        </div>
+        <div class="card">
+            <h3>Pytrix Framework</h3>
+            <p>Arquitetura Core focada em micro-serviços, com sistema de i18n dinâmico e gestão de estado otimizada.</p>
+            <div class="tag">System Architecture</div><div class="tag">Automation</div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="contato">
+    <h2 class="section-title">Access Point</h2>
+    <div class="grid">
+        <div class="card">
+            <p class="mono">// Protocolo de segurança ativo:</p>
+            <p style="margin-top: 10px; color: #ff4444;">Filtro de chamadas ativado. Não atendo números desconhecidos. O contato inicial deve ser via mensagem.</p>
+            <a href="https://wa.me/5513988026670?text=Olá%20Fernando,%20solicito%20contato%20técnico." class="whatsapp-btn mono">CONNECT_VIA_WHATSAPP</a>
+        </div>
+    </div>
+</section>
+
+<footer class="mono">
+    <p>ROOT@FERNANDO_SILVEIRA:~$ echo "© 2026 Jacareí, SP - Brazil"</p>
+</footer>
+
+<script>
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメリヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+    const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const nums = '0123456789';
+    const alphabet = katakana + latin + nums;
+
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+
+    const rainDrops = [];
+
+    for (let x = 0; x < columns; x++) {
+        rainDrops[x] = 1;
+    }
+
+    const draw = () => {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#0F0';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < rainDrops.length; i++) {
+            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+            if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                rainDrops[i] = 0;
+            }
+            rainDrops[i]++;
+        }
+    };
+
+    setInterval(draw, 30);
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+</script>
+
+</body>
+</html>

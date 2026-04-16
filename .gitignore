@@ -11,3 +11,4 @@ docker-compose.override.yml
 .env
 *.backup
 .ssh_cache/
+pytrix_docker_compose.ymlbk

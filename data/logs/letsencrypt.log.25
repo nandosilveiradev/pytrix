@@ -1,0 +1,137 @@
+2026-04-12 02:21:51,319:DEBUG:certbot._internal.main:certbot version: 5.3.1
+2026-04-12 02:21:51,320:DEBUG:certbot._internal.main:Location of certbot entry point: /opt/certbot/bin/certbot
+2026-04-12 02:21:51,320:DEBUG:certbot._internal.main:Arguments: ['--config', '/etc/letsencrypt.ini', '--work-dir', '/tmp/letsencrypt-lib', '--logs-dir', '/data/logs', '--cert-name', 'npm-6', '--agree-tos', '--authenticator', 'webroot', '-m', 'fernandosilveiradev@gmail.com', '--preferred-challenges', 'http', '--domains', 'eyes-quite-happened-describe.trycloudflare.com,pytrix.eu.org,site.localhost,site.pytrix.eu.org,strange-navigation-simon-encouraging.trycloudflare.com']
+2026-04-12 02:21:51,320:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#manual,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2026-04-12 02:21:51,331:DEBUG:certbot._internal.log:Root logging level set at 30
+2026-04-12 02:21:51,331:DEBUG:certbot._internal.plugins.selection:Requested authenticator webroot and installer None
+2026-04-12 02:21:51,331:DEBUG:certbot._internal.plugins.selection:Single candidate plugin: * webroot
+Description: Saves the necessary validation files to a .well-known/acme-challenge/ directory within the nominated webroot path. A separate HTTP server must be running and serving files from the webroot path. HTTP challenge only (wildcards not supported).
+Interfaces: Authenticator, Plugin
+Entry point: EntryPoint(name='webroot', value='certbot._internal.plugins.webroot:Authenticator', group='certbot.plugins')
+Initialized: <certbot._internal.plugins.webroot.Authenticator object at 0x7f7bc08cd690>
+Prep: True
+2026-04-12 02:21:51,332:DEBUG:certbot._internal.plugins.selection:Selected authenticator <certbot._internal.plugins.webroot.Authenticator object at 0x7f7bc08cd690> and installer None
+2026-04-12 02:21:51,332:INFO:certbot._internal.plugins.selection:Plugins selected: Authenticator webroot, Installer None
+2026-04-12 02:21:51,369:DEBUG:certbot._internal.main:Picked account: <Account(RegistrationResource(body=Registration(key=None, contact=(), agreement=None, status=None, terms_of_service_agreed=None, only_return_existing=None, external_account_binding=None), uri='https://acme-v02.api.letsencrypt.org/acme/acct/3227965801', new_authzr_uri=None, terms_of_service=None), b14ff888b2a6a362e8d1450278c4e7ba, Meta(creation_dt=datetime.datetime(2026, 4, 10, 13, 43, 27, tzinfo=datetime.timezone.utc), creation_host='65adc4daa9d9', register_to_eff=None))>
+2026-04-12 02:21:51,369:DEBUG:acme.client:Sending GET request to https://acme-v02.api.letsencrypt.org/directory.
+2026-04-12 02:21:51,371:DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org:443
+2026-04-12 02:21:52,051:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "GET /directory HTTP/1.1" 200 1033
+2026-04-12 02:21:52,051:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Sun, 12 Apr 2026 02:21:51 GMT
+Content-Type: application/json
+Content-Length: 1033
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "45qAeIEt0rM": "https://community.letsencrypt.org/t/adding-random-entries-to-the-directory/33417",
+  "keyChange": "https://acme-v02.api.letsencrypt.org/acme/key-change",
+  "meta": {
+    "caaIdentities": [
+      "letsencrypt.org"
+    ],
+    "profiles": {
+      "classic": "https://letsencrypt.org/docs/profiles#classic",
+      "shortlived": "https://letsencrypt.org/docs/profiles#shortlived",
+      "tlsclient": "https://letsencrypt.org/docs/profiles#tlsclient",
+      "tlsserver": "https://letsencrypt.org/docs/profiles#tlsserver"
+    },
+    "termsOfService": "https://letsencrypt.org/documents/LE-SA-v1.6-August-18-2025.pdf",
+    "website": "https://letsencrypt.org"
+  },
+  "newAccount": "https://acme-v02.api.letsencrypt.org/acme/new-acct",
+  "newNonce": "https://acme-v02.api.letsencrypt.org/acme/new-nonce",
+  "newOrder": "https://acme-v02.api.letsencrypt.org/acme/new-order",
+  "renewalInfo": "https://acme-v02.api.letsencrypt.org/acme/renewal-info",
+  "revokeCert": "https://acme-v02.api.letsencrypt.org/acme/revoke-cert"
+}
+2026-04-12 02:21:52,052:DEBUG:certbot._internal.display.obj:Notifying user: Requesting a certificate for eyes-quite-happened-describe.trycloudflare.com and 4 more
+2026-04-12 02:21:52,059:DEBUG:acme.client:Requesting fresh nonce
+2026-04-12 02:21:52,059:DEBUG:acme.client:Sending HEAD request to https://acme-v02.api.letsencrypt.org/acme/new-nonce.
+2026-04-12 02:21:52,239:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "HEAD /acme/new-nonce HTTP/1.1" 200 0
+2026-04-12 02:21:52,239:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Sun, 12 Apr 2026 02:21:52 GMT
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: nkq3kksZdeCmvD9kZXro_PBiPFQ6SOWvAPuqZNWAVbqj2z3Vj1Y
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+
+2026-04-12 02:21:52,239:DEBUG:acme.client:Storing nonce: nkq3kksZdeCmvD9kZXro_PBiPFQ6SOWvAPuqZNWAVbqj2z3Vj1Y
+2026-04-12 02:21:52,239:DEBUG:acme.client:JWS payload:
+b'{\n  "identifiers": [\n    {\n      "type": "dns",\n      "value": "eyes-quite-happened-describe.trycloudflare.com"\n    },\n    {\n      "type": "dns",\n      "value": "pytrix.eu.org"\n    },\n    {\n      "type": "dns",\n      "value": "site.localhost"\n    },\n    {\n      "type": "dns",\n      "value": "site.pytrix.eu.org"\n    },\n    {\n      "type": "dns",\n      "value": "strange-navigation-simon-encouraging.trycloudflare.com"\n    }\n  ]\n}'
+2026-04-12 02:21:52,243:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/new-order:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvMzIyNzk2NTgwMSIsICJub25jZSI6ICJua3Eza2tzWmRlQ212RDlrWlhyb19QQmlQRlE2U09XdkFQdXFaTldBVmJxajJ6M1ZqMVkiLCAidXJsIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL25ldy1vcmRlciJ9",
+  "signature": "TjgciUaWrIKk_XZ1Xe-PCrIEuv3vMRf7wJryb6RomACONQ-nlvYLB1Ac8uISRLb4DDtHLi20qDpb0Z95y48LbEbIlggKa0DEfWXZ-T3CEpNwRSOYSApY_BvdfRkliX1IhUs9sbn5fsmVKZbc5XsJNHko7FBwg41GKpZXoco8iAfyPkDivVVcrRQtA9RoAXI0bW9eiD8XuxvvFZUfTNgWfO2HmVu6wTRpdOgn9AoenNvR3CfLQFRtpn8Md-OgNSYiLZjl8PSFj92ge6cUwjEOtQ-u_pD6KNATjylcMj3DqJnEGgv_KuzbW595HGWUskXOpVUc8uWBOxWoJtfgFk1Mgw",
+  "payload": "ewogICJpZGVudGlmaWVycyI6IFsKICAgIHsKICAgICAgInR5cGUiOiAiZG5zIiwKICAgICAgInZhbHVlIjogImV5ZXMtcXVpdGUtaGFwcGVuZWQtZGVzY3JpYmUudHJ5Y2xvdWRmbGFyZS5jb20iCiAgICB9LAogICAgewogICAgICAidHlwZSI6ICJkbnMiLAogICAgICAidmFsdWUiOiAicHl0cml4LmV1Lm9yZyIKICAgIH0sCiAgICB7CiAgICAgICJ0eXBlIjogImRucyIsCiAgICAgICJ2YWx1ZSI6ICJzaXRlLmxvY2FsaG9zdCIKICAgIH0sCiAgICB7CiAgICAgICJ0eXBlIjogImRucyIsCiAgICAgICJ2YWx1ZSI6ICJzaXRlLnB5dHJpeC5ldS5vcmciCiAgICB9LAogICAgewogICAgICAidHlwZSI6ICJkbnMiLAogICAgICAidmFsdWUiOiAic3RyYW5nZS1uYXZpZ2F0aW9uLXNpbW9uLWVuY291cmFnaW5nLnRyeWNsb3VkZmxhcmUuY29tIgogICAgfQogIF0KfQ"
+}
+2026-04-12 02:21:52,665:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/new-order HTTP/1.1" 400 221
+2026-04-12 02:21:52,665:DEBUG:acme.client:Received response:
+HTTP 400
+Server: nginx
+Date: Sun, 12 Apr 2026 02:21:52 GMT
+Content-Type: application/problem+json
+Content-Length: 221
+Connection: keep-alive
+Boulder-Requester: 3227965801
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: wN0WXCrxNYY4Q0MNwBE-SkLrK1z5RvvyDou-PSKSc187j4z4yq4
+
+{
+  "type": "urn:ietf:params:acme:error:rejectedIdentifier",
+  "detail": "Invalid identifiers requested :: Cannot issue for \"site.localhost\": Domain name does not end with a valid public suffix (TLD)",
+  "status": 400
+}
+2026-04-12 02:21:52,666:DEBUG:certbot._internal.log:Exiting abnormally:
+Traceback (most recent call last):
+  File "/opt/certbot/bin/certbot", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/main.py", line 18, in main
+    return internal_main.main(cli_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/main.py", line 1886, in main
+    return config.func(config, plugins)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/main.py", line 1598, in certonly
+    lineage = _get_and_save_cert(le_client, config, sans, certname, lineage)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/main.py", line 143, in _get_and_save_cert
+    lineage = le_client.obtain_and_enroll_certificate(sans, certname)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/client.py", line 533, in obtain_and_enroll_certificate
+    cert, chain, key, _ = self.obtain_certificate(sans)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/client.py", line 434, in obtain_certificate
+    orderr = self._get_order_and_authorizations(csr.data, self.config.allow_subset_of_names)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/client.py", line 494, in _get_order_and_authorizations
+    orderr = self.acme.new_order(csr_pem, profile=profile)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/acme/client.py", line 135, in new_order
+    response = self._post(self.directory['newOrder'], order)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/acme/client.py", line 461, in _post
+    return self.net.post(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/acme/client.py", line 812, in post
+    return self._post_once(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/acme/client.py", line 827, in _post_once
+    response = self._check_response(response, content_type=content_type)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/acme/client.py", line 699, in _check_response
+    raise messages.Error.from_json(jobj)
+acme.messages.Error: urn:ietf:params:acme:error:rejectedIdentifier :: The server will not issue certificates for the identifier :: Invalid identifiers requested :: Cannot issue for "site.localhost": Domain name does not end with a valid public suffix (TLD)
+2026-04-12 02:21:52,671:ERROR:certbot._internal.log:An unexpected error occurred:
+2026-04-12 02:21:52,671:ERROR:certbot._internal.log:Invalid identifiers requested :: Cannot issue for "site.localhost": Domain name does not end with a valid public suffix (TLD)

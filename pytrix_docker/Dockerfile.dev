@@ -1,0 +1,92 @@
+# Estágio 1: Pegar o binário da Cloudflare
+FROM cloudflare/cloudflared:latest AS cloudflare_bin
+
+# Estágio 2: Sua imagem base Debian Trixie
+FROM debian:trixie-slim
+
+ARG DEV_USER=developer
+ARG DEV_PASS=pytrix123
+
+# 1. Dependências de Sistema e Compilação
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sudo openssh-server openssh-client tmux wget curl bind9 neovim \
+    iputils-ping net-tools build-essential gcc cmake git locales \
+    libssl-dev zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
+    libsqlite3-dev libreadline-dev libffi-dev libbz2-dev liblzma-dev \
+    nodejs npm python3-venv zsh \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Configuração de Locales (UTF-8)
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+# 3. Usuário e Sudo
+RUN useradd -m -s /usr/bin/zsh $DEV_USER \
+    && echo "$DEV_USER:$DEV_PASS" | chpasswd \
+    && usermod -aG sudo $DEV_USER \
+    && echo "$DEV_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# 4. Compilação do Python 3.13.5
+WORKDIR /tmp
+RUN wget https://www.python.org/ftp/python/3.13.5/Python-3.13.5.tar.xz \
+    && tar -xf Python-3.13.5.tar.xz \
+    && cd Python-3.13.5 && ./configure --enable-optimizations --enable-shared LDFLAGS="-Wl,-rpath /usr/local/lib" \
+    && make -j $(nproc) && make altinstall \
+    && ln -sf /usr/local/bin/python3.13 /usr/bin/python3.13.5 \
+    && ln -sf /usr/local/bin/python3.13 /usr/bin/python3 \
+    && ldconfig \
+    && python3.13.5 -m ensurepip --upgrade \
+    && python3.13.5 -m pip install --upgrade pip setuptools wheel \
+    && cd /tmp && rm -rf Python-3.13.5*
+
+RUN npm install -g pyright
+
+# 5. Injetar o Cloudflared (Aqui está a unificação)
+COPY --from=cloudflare_bin /usr/local/bin/cloudflared /usr/local/bin/cloudflared
+
+# 6. Neovim + Plugins (YCM)
+USER $DEV_USER
+WORKDIR /home/$DEV_USER
+RUN mkdir -p .config/nvim .local/share/nvim/site/pack/plugins/start \
+    && curl -fLo .local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+    && git clone --recursive https://github.com/ycm-core/YouCompleteMe.git .local/share/nvim/site/pack/plugins/start/YouCompleteMe \
+    && cd .local/share/nvim/site/pack/plugins/start/YouCompleteMe \
+    && python3.13.5 install.py --clangd-completer --ts-completer
+
+# 7. Cópia das Configurações
+COPY pytrix_docker/.vimrc .config/nvim/init.vim
+COPY pytrix_docker/.tmux.conf .tmux.conf
+COPY pytrix_docker/.zshrc .zshrc
+COPY pytrix_docker/.oh-my-zsh .oh-my-zsh
+
+USER root
+RUN mkdir -p /etc/pytrix
+COPY .pytrix_env /etc/pytrix/.env
+
+# Injeção de variáveis globais
+RUN echo 'if [ -f /etc/pytrix/.env ]; then export $(grep -v "^#" /etc/pytrix/.env | xargs); fi' >> /etc/zsh/zshrc && \
+    echo 'if [ -f /etc/pytrix/.env ]; then export $(grep -v "^#" /etc/pytrix/.env | xargs); fi' >> /etc/bash.bashrc
+RUN chown -R $DEV_USER:$DEV_USER /etc/pytrix
+
+# 8. Script de Boot Unificado (SSH + DNS + Tunnel)
+RUN echo '#!/bin/bash\n\
+service ssh start\n\
+service bind9 start\n\
+# Carrega as vars para o processo atual\n\
+if [ -f /etc/pytrix/.env ]; then\n\
+  set -a; source /etc/pytrix/.env; set +a;\n\
+fi\n\
+# Inicia o Túnel em background\n\
+cloudflared tunnel --no-autoupdate run --token $TUNNEL_TOKEN &\n\
+# Mantém o container vivo com o shell final\n\
+exec zsh' > /usr/local/bin/start.sh
+
+RUN chmod +x /usr/local/bin/start.sh
+
+# 9. Finalização
+USER $DEV_USER
+WORKDIR /home/$DEV_USER/pytrix
+
+ENTRYPOINT ["/usr/local/bin/start.sh"]

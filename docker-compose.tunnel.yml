@@ -1,0 +1,9 @@
+services:
+  portfolio_test:
+    image: nginx:alpine
+    container_name: pytrix_tunnel_test
+    ports:
+      - "9090:80"
+    volumes:
+      - ./pytrix_web_static:/usr/share/nginx/html:ro
+    restart: unless-stopped

@@ -1,0 +1,32 @@
+import ollama
+import os
+
+def gerar_arquivo_ninja(prompt_usuario):
+    # O System Prompt é o segredo para ele não "encher linguiça"
+    system_instruction = (
+        "Output format: First line is the filename only. "
+        "Remaining lines are the file content. No chat, no markdown."
+    )
+    
+    response = ollama.generate(
+        model='llama3', 
+        system=system_instruction,
+        prompt=prompt_usuario
+    )
+    
+    linhas = response['response'].strip().split('\n')
+    
+    if len(linhas) > 1:
+        nome_arquivo = linhas[0].strip()
+        conteudo = '\n'.join(linhas[1:])
+        
+        # Cria o arquivo no /root ou onde você estiver
+        with open(nome_arquivo, 'w') as f:
+            f.write(conteudo)
+        
+        print(f"🚀 [Pytrix] Arquivo '{nome_arquivo}' criado sem lero-lero.")
+    else:
+        print("⚠️ O modelo não seguiu o formato de 'Gente Grande'.")
+
+# Exemplo de uso:
+# gerar_arquivo_ninja("Crie um script python que limpa o cache do docker")

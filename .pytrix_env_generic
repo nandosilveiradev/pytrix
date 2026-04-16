@@ -1,0 +1,38 @@
+# ==========================================================
+# PYTRIX FRAMEWORK - TEMPLATE DE CONFIGURAÇÃO GLOBAL
+# ==========================================================
+# INSTRUÇÕES:
+# 1. Duplique este arquivo: cp .pytrix_env_generic .pytrix_env
+# 2. Configure os valores reais no arquivo .pytrix_env
+# 3. Certifique-se de que o .pytrix_env esteja no seu .gitignore
+# ==========================================================
+
+# --- CREDENCIAIS DE ACESSO (DEVELOPMENT) ---
+# Usuário e senha para acesso ao ambiente de desenvolvimento isolado
+DEV_USER=admin
+DEV_PASS=insira_uma_senha_forte
+
+# --- CONFIGURAÇÕES DE CORE ---
+# Arquivo de tradução padrão do framework (i18n)
+PYTRIX_LANG_FILE=lang
+
+# --- DOMÍNIO E MAPEAMENTO ---
+# Alvo da captura do framework (.com, .com.br ou https://nic.eu.org)
+# O domínio deve estar delegado para a Cloudflare para o túnel funcionar
+CAPTURE_TARGET=seu-dominio.com.br
+
+# --- NETWORKING & PORTAS ---
+# Portas internas do container e roteamento do Pytrix Router
+SSH_PORT=2222
+HTTP_PORT=80
+HTTPS_PORT=443
+
+# --- RESOLUÇÃO DE NOMES (DNS) ---
+# DNS upstream para o ecossistema Pytrix
+PRIMARY_DNS=8.8.8.8
+SECONDARY_DNS=1.1.1.1
+
+# --- CLOUDFLARE ZERO TRUST TUNNEL ---
+# Token necessário para autenticar o túnel sem abrir portas no roteador
+# Obtenha em: Dashboard Cloudflare > Networks > Tunnels
+TUNNEL_TOKEN=seu_token_aqui

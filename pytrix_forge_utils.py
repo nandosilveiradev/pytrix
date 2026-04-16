@@ -1,57 +1,84 @@
 #!/bin/bash
 
-# --- CONFIGURAÇÕES ---
+# --- CONFIGURAÇÕES SOBERANAS ---
+ADMIN_NAME="Fernando Silveira"
+ADMIN_EMAIL="fernandosilveiradev@gmail.com"
+OFFICIAL_REMOTE="github.com/nandosilveira/pytrix"
+
 APP_NAME=$1
 TARGET_DIR="pytrix_utils/$APP_NAME"
+FORGE_BRANCH="forge/${APP_NAME}_$(date +%s)" # ID único para a branch de build
 
 if [ -z "$APP_NAME" ]; then
-    echo "ERRO: Cadê o nome do app? Ex: ./pytrix_forge_utils.sh gerador_pdf"
+    echo "❌ ERRO: ./pytrix_forge.sh nome_do_app"
     exit 1
 fi
 
-echo "🏗️  FORJANDO: $APP_NAME"
+# --- 0. A RAIZ DA FORJA (Criação do ambiente isolado) ---
+git checkout main
+git pull origin main
+git checkout -b "$FORGE_BRANCH"
 
-# 1. O TRANSPLANTE (Copia tudo para garantir que nada falte no início)
+echo "🏗️  FORJANDO EM BRANCH ISOLADA: $FORGE_BRANCH"
+
+# --- 1. TRAVA DE SOBERANIA ---
+if [[ $(git config user.name) != "$ADMIN_NAME" ]]; then
+    git config --local user.name "$ADMIN_NAME"
+    git config --local user.email "$ADMIN_EMAIL"
+fi
+
+# --- 2. O TRANSPLANTE & 3. O LOG DE NASCIMENTO ---
 mkdir -p "$TARGET_DIR"
-cp -r pytrix_models pytrix_views pytrix_i18n pytrix_controllers "$TARGET_DIR/"
-cp pytrix.py "$TARGET_DIR/${APP_NAME}.py"
+mv pytrix_models pytrix_views pytrix_i18n pytrix_controllers "$TARGET_DIR/"
+mv pytrix.py "$TARGET_DIR/${APP_NAME}.py"
 
-# 2. O SCANNER DE DNA (Sua lógica de 10 anos de aula)
-# Pega os imports, transforma em caminho de arquivo e guarda num arquivo temporário
+LOG_FILE="$TARGET_DIR/pytrix_forge.log"
+{
+    echo "APP: $APP_NAME"
+    echo "DATA/HORA: $(date '+%d/%m/%Y %H:%M:%S')"
+    echo "BRANCH DE ORIGEM: $FORGE_BRANCH"
+    echo "FORJADOR: $(git config user.name)"
+} > "$LOG_FILE"
+
+# --- 4. SCANNER DE DNA & 5. O EXTERMÍNIO ---
 TEMP_LIST=$(mktemp)
 grep -E "^(from|import) pytrix_" "$TARGET_DIR/${APP_NAME}.py" | while read -r linha; do
     modulo=$(echo "$linha" | awk '{print $2}')
-    # Converte 'pytrix_models.vendas' em 'pytrix_models/vendas.py'
     echo "$modulo" | tr '.' '/' | sed 's/$/.py/' >> "$TEMP_LIST"
 done
 
-echo "🔍 Mapeando dependências reais..."
-
-# 3. O EXTERMÍNIO (O que não está no 'ponto relativo' vira fumaça)
-# Varremos todas as pastas pytrix_ dentro do novo app
 find "$TARGET_DIR" -type f -name "*.py" | while read -r arquivo; do
     nome_base=$(basename "$arquivo")
-    
-    # Protege o arquivo principal e os dunder init
-    if [[ "$nome_base" == "${APP_NAME}.py" || "$nome_base" == "__init__.py" ]]; then
+    if [[ "$nome_base" == "${APP_NAME}.py" || "$nome_base" == "__init__.py" || "$nome_base" == "pytrix_forge.log" ]]; then
         continue
     fi
-
-    # Limpa o caminho para comparar (ex: utils/app/pytrix_models/vendas.py -> pytrix_models/vendas.py)
     path_limpo=$(echo "$arquivo" | sed "s|$TARGET_DIR/||")
-
-    # Se NÃO estiver na lista de quem o app importa, tchau!
     if ! grep -q "$path_limpo" "$TEMP_LIST"; then
         rm "$arquivo"
-        echo "  [🗑️] Removido: $path_limpo"
     fi
 done
 
-# 4. LIMPEZA DE PASTAS VAZIAS (Pra não ficar diretório fantasma)
+# --- 6. FINALIZAÇÃO ---
 find "$TARGET_DIR" -type d -empty -delete
-
-# 5. O AJUSTE RELATIVO (O segredo da portabilidade)
 sed -i "s/from pytrix_/from .pytrix_/g" "$TARGET_DIR/${APP_NAME}.py"
-
 rm "$TEMP_LIST"
-echo "✅ $APP_NAME está pronto e limpo na pasta utils/!"
+
+# --- 7. O PUSH DA BRANCH DE FORJA ---
+git add "$TARGET_DIR"
+git commit -m "forge: $APP_NAME ($ADMIN_NAME)"
+git push origin "$FORGE_BRANCH"
+
+echo "✅ Forja concluída na branch $FORGE_BRANCH"
+echo "💡 Agora você pode fazer o Merge ou fechar o PR para a Main."
+
+
+
+
+
+
+
+
+
+
+
+

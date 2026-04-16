@@ -1,0 +1,4 @@
+# O comando que faz a mágica:
+output=$(ollama run pytrix-model "Crie um script de backup")
+nome=$(echo "$output" | tail -n 1)
+echo "$output" | head -n -1 > "$nome"

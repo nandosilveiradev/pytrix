@@ -8,12 +8,12 @@ fica a criterio do usuario manter o nome apos forge
 """
 
 
-from pytrix_controllers.pytrix_controllers_select_language import PytrixControllersSelectLanguage
+from pytrix_controllers.pytrix_controllers_select_language import PytrixControllerSelectLanguage
 
 class App:
     def __init__(self):
         # controlador responsável pela seleção de idioma
-        self.select_language: PytrixControllersSelectLanguage = PytrixControllersSelectLanguage()
+        self.select_language: PytrixControllerSelectLanguage = PytrixControllerSelectLanguage()
 
     def run(self):
         # ensure_tmux_installed() 

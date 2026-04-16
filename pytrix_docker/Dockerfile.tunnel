@@ -1,0 +1,8 @@
+FROM cloudflare/cloudflared:latest
+
+# Copia o seu arquivo de ambiente para dentro
+COPY .pytrix_env /app/.env
+
+# Usa um shell script para dar o "source" e subir o túnel
+# Na imagem da cloudflare o shell é o /bin/sh (mais simples que o zsh)
+ENTRYPOINT ["/bin/sh", "-c", "export $(grep -v '^#' /app/.env | xargs) && cloudflared tunnel --no-autoupdate run --token $TUNNEL_TOKEN"]

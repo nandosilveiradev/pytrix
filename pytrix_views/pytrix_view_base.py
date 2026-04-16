@@ -1,43 +1,39 @@
-# pytrix_views/pytrix_view_base.py
-import questionary
+from i18n.i18n import I18N
+from abc import ABC, abstractmethod
 
-class PytrixViewBase:
+# --- 1. UNIDADE GLOBAL (O CONTRATO) ---
+class PytrixI18NProtocol(ABC):
+    def __init__(self, px_i18n: dict = I18N):
+        self.px_i18n = px_i18n
+
+    @abstractmethod
+    def pytrix_get_msg(self, px_key: str) -> str:
+        """Contrato: Apenas define o que deve existir."""
+        pass
+
+# --- 2. O MOLDE (A LÓGICA DO TRATAMENTO) ---
+class PytrixTemplateModel(PytrixI18NProtocol):
+    def pytrix_get_msg(self, px_key: str) -> str:
+        """Aqui o dado é tratado/recuperado antes da view."""
+        return self.px_i18n.get(px_key, px_key)
+
+# --- 3. A HERANÇA DE USO (O GARÇOM DOS DADOS) ---
+class PytrixModelBase(PytrixTemplateModel):
     """
-    Classe base para todas as Views do ecossistema Pytrix.
-    Centraliza a interação CLI e padroniza o namespace px_.
+    Usa esse cara para os Dumps JSON. 
+    Se não tem banco, ele busca no dicionário/dump.
     """
-    def __init__(self):
-        # Atributo de estado global do framework
-        self.px_stats: bool = True
-        # Identificador base para auditoria
-        self.px_base_name: str = "PytrixViewBase"
+    pass
 
-    def show_message(self, message: str) -> str:
-        """Retorna uma mensagem genérica formatada."""
-        return message
+# --- 4. A VIEW (A ESTETICISTA BURRA) ---
+class PytrixView:
+    def __init__(self, px_translator: PytrixI18NProtocol):
+        # Ela recebe um tradutor que segue o protocolo
+        self.px_translator = px_translator
 
-    def show_error(self, error: str) -> str:
-        """Retorna uma mensagem de erro padronizada Pytrix."""
-        return f"[ERRO] {error}"
+    def pytrix_show_message(self, px_key: str):
+        """A View só recebe a chave e 'pinta' na tela."""
+        px_msg = self.px_translator.pytrix_get_msg(px_key)
+        print(px_msg)
 
-    def show_success(self, success: str) -> str:
-        """Retorna uma mensagem de sucesso padronizada Pytrix."""
-        return f"[OK] {success}"
-
-    def show_menu(self, options: list, prompt: str) -> str:
-        """
-        Gera um menu interativo usando questionary.
-        Otimizado para o fluxo do Controller via self.px_view.
-        """
-        choice = questionary.select(
-            prompt,
-            choices=options
-        ).ask()
-        return choice
-
-    def show_value(self, msg: str) -> None:
-        """
-        Único ponto de saída de impressão direta no console.
-        Facilita o redirecionamento de logs ou auditoria de saída.
-        """
-        print(f"{msg}")
+# pytrix_view.py

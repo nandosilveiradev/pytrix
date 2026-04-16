@@ -6,24 +6,24 @@ class PytrixControllerSelectLanguage:
     """
     Controller de orquestração para seleção de idioma Pytrix.
     Usa o padrão de variáveis px_ para otimização de fluxo interno e LSP.
-    
+
     Herda de: Prefab MVC Pytrix
     Integração:
         - self.px_model: PytrixModelSelectLanguage
         - self.px_view: PytrixViewSelectLanguage
-        
+
     Retorno:
         - px_lang_iso: String do idioma selecionado (ex: 'pt')
     """
     def __init__(self):
         print("PytrixControllersSelectLanguage Carregado")
-        
+
         # Instâncias com prefixo px_ para acesso ultra-rápido via autocomplete
         self.px_model: PytrixModelSelectLanguage = PytrixModelSelectLanguage()
         print("pytrix_model_select Carregado")
-        
+
         self.px_view: PytrixViewSelectLanguage = PytrixViewSelectLanguage()
-        
+
         # Atributos de estado interno protegidos
         self.px_lang_raw: str = ""
         self.px_lang_iso: str = ""
@@ -53,5 +53,4 @@ class PytrixControllerSelectLanguage:
 
         # Define o idioma no Model e captura o código final
         self.px_lang_iso = self.px_model.set_lang(self.px_lang_raw)
-
         return self.px_lang_iso

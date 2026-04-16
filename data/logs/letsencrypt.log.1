@@ -1,0 +1,228 @@
+2026-04-12 15:07:45,949:DEBUG:certbot._internal.main:certbot version: 5.3.1
+2026-04-12 15:07:45,949:DEBUG:certbot._internal.main:Location of certbot entry point: /opt/certbot/bin/certbot
+2026-04-12 15:07:45,949:DEBUG:certbot._internal.main:Arguments: ['--config', '/etc/letsencrypt.ini', '--work-dir', '/tmp/letsencrypt-lib', '--logs-dir', '/data/logs', '--cert-name', 'npm-33', '--agree-tos', '-m', 'fernandosilveiradev@gmail.com', '--preferred-challenges', 'dns', '--domains', 'pytrix.eu.org', '--authenticator', 'dns-acmedns', '--dns-acmedns-credentials', '/etc/letsencrypt/credentials/credentials-33']
+2026-04-12 15:07:45,950:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#dns-acmedns,PluginEntryPoint#manual,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2026-04-12 15:07:45,958:DEBUG:certbot._internal.log:Root logging level set at 30
+2026-04-12 15:07:45,958:DEBUG:certbot._internal.plugins.selection:Requested authenticator dns-acmedns and installer None
+2026-04-12 15:07:45,958:DEBUG:certbot._internal.plugins.selection:Single candidate plugin: * dns-acmedns
+Description: Obtain certificates using a DNS TXT record (if you are using ACME-DNS for DNS.)
+Interfaces: Authenticator, Plugin
+Entry point: EntryPoint(name='dns-acmedns', value='certbot_dns_acmedns.dns_acmedns:Authenticator', group='certbot.plugins')
+Initialized: <certbot_dns_acmedns.dns_acmedns.Authenticator object at 0x7fbabd8ae950>
+Prep: True
+2026-04-12 15:07:45,958:DEBUG:certbot._internal.plugins.selection:Selected authenticator <certbot_dns_acmedns.dns_acmedns.Authenticator object at 0x7fbabd8ae950> and installer None
+2026-04-12 15:07:45,958:INFO:certbot._internal.plugins.selection:Plugins selected: Authenticator dns-acmedns, Installer None
+2026-04-12 15:07:45,992:DEBUG:certbot._internal.main:Picked account: <Account(RegistrationResource(body=Registration(key=None, contact=(), agreement=None, status=None, terms_of_service_agreed=None, only_return_existing=None, external_account_binding=None), uri='https://acme-v02.api.letsencrypt.org/acme/acct/3227965801', new_authzr_uri=None, terms_of_service=None), b14ff888b2a6a362e8d1450278c4e7ba, Meta(creation_dt=datetime.datetime(2026, 4, 10, 13, 43, 27, tzinfo=datetime.timezone.utc), creation_host='65adc4daa9d9', register_to_eff=None))>
+2026-04-12 15:07:45,993:DEBUG:acme.client:Sending GET request to https://acme-v02.api.letsencrypt.org/directory.
+2026-04-12 15:07:45,994:DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org:443
+2026-04-12 15:07:46,584:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "GET /directory HTTP/1.1" 200 1033
+2026-04-12 15:07:46,584:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Sun, 12 Apr 2026 15:07:46 GMT
+Content-Type: application/json
+Content-Length: 1033
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "0x3Up5tMYgE": "https://community.letsencrypt.org/t/adding-random-entries-to-the-directory/33417",
+  "keyChange": "https://acme-v02.api.letsencrypt.org/acme/key-change",
+  "meta": {
+    "caaIdentities": [
+      "letsencrypt.org"
+    ],
+    "profiles": {
+      "classic": "https://letsencrypt.org/docs/profiles#classic",
+      "shortlived": "https://letsencrypt.org/docs/profiles#shortlived",
+      "tlsclient": "https://letsencrypt.org/docs/profiles#tlsclient",
+      "tlsserver": "https://letsencrypt.org/docs/profiles#tlsserver"
+    },
+    "termsOfService": "https://letsencrypt.org/documents/LE-SA-v1.6-August-18-2025.pdf",
+    "website": "https://letsencrypt.org"
+  },
+  "newAccount": "https://acme-v02.api.letsencrypt.org/acme/new-acct",
+  "newNonce": "https://acme-v02.api.letsencrypt.org/acme/new-nonce",
+  "newOrder": "https://acme-v02.api.letsencrypt.org/acme/new-order",
+  "renewalInfo": "https://acme-v02.api.letsencrypt.org/acme/renewal-info",
+  "revokeCert": "https://acme-v02.api.letsencrypt.org/acme/revoke-cert"
+}
+2026-04-12 15:07:46,585:DEBUG:certbot._internal.display.obj:Notifying user: Requesting a certificate for pytrix.eu.org
+2026-04-12 15:07:46,587:DEBUG:acme.client:Requesting fresh nonce
+2026-04-12 15:07:46,587:DEBUG:acme.client:Sending HEAD request to https://acme-v02.api.letsencrypt.org/acme/new-nonce.
+2026-04-12 15:07:46,789:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "HEAD /acme/new-nonce HTTP/1.1" 200 0
+2026-04-12 15:07:46,789:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Sun, 12 Apr 2026 15:07:46 GMT
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: nkq3kksZfFuBMybe7VnQP4TNe21u5A3mMENeaGAVd2QN6hPk8Rc
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+
+2026-04-12 15:07:46,789:DEBUG:acme.client:Storing nonce: nkq3kksZfFuBMybe7VnQP4TNe21u5A3mMENeaGAVd2QN6hPk8Rc
+2026-04-12 15:07:46,789:DEBUG:acme.client:JWS payload:
+b'{\n  "identifiers": [\n    {\n      "type": "dns",\n      "value": "pytrix.eu.org"\n    }\n  ]\n}'
+2026-04-12 15:07:46,791:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/new-order:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvMzIyNzk2NTgwMSIsICJub25jZSI6ICJua3Eza2tzWmZGdUJNeWJlN1ZuUVA0VE5lMjF1NUEzbU1FTmVhR0FWZDJRTjZoUGs4UmMiLCAidXJsIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL25ldy1vcmRlciJ9",
+  "signature": "Z4F5qGA9YnrmASJN_eXQaTPx_OSZ8RsbQKPDuikgVIZOzVlNttvUlWW0OOd5s06F646bL_omSZjwLMLqUTF5Kr1qaNuhUYchTr6SIp9f0QfxMMrX2_Nw9JKynL1XD5lyFu8IIxR0bIBVVm2FKkbGVLnoFZcT87ckOBkHvm4e2MS97JYluRv_wJe_viKA2ZBmKjuPkfqf8surhlwRQu5u0u68viP_xlxdi1_q_BC1CoLKQ3iD1hea4u_PqS_5QRrFKM4FbV4grXoTOb4n0VtHTG214vbH6of31Cf-TlqB5PjQSSUz7gPJjpKQGpmh9szEpo1nL3U7OHRATpQL0bY_cg",
+  "payload": "ewogICJpZGVudGlmaWVycyI6IFsKICAgIHsKICAgICAgInR5cGUiOiAiZG5zIiwKICAgICAgInZhbHVlIjogInB5dHJpeC5ldS5vcmciCiAgICB9CiAgXQp9"
+}
+2026-04-12 15:07:47,506:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/new-order HTTP/1.1" 201 347
+2026-04-12 15:07:47,506:DEBUG:acme.client:Received response:
+HTTP 201
+Server: nginx
+Date: Sun, 12 Apr 2026 15:07:47 GMT
+Content-Type: application/json
+Content-Length: 347
+Connection: keep-alive
+Boulder-Requester: 3227965801
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Location: https://acme-v02.api.letsencrypt.org/acme/order/3227965801/499959228421
+Replay-Nonce: wN0WXCrxb3T-cV99ELvDtDg06K-O6DG38-dtfs15x4snJ3kNb74
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "status": "pending",
+  "expires": "2026-04-19T15:07:46Z",
+  "identifiers": [
+    {
+      "type": "dns",
+      "value": "pytrix.eu.org"
+    }
+  ],
+  "authorizations": [
+    "https://acme-v02.api.letsencrypt.org/acme/authz/3227965801/687087697761"
+  ],
+  "finalize": "https://acme-v02.api.letsencrypt.org/acme/finalize/3227965801/499959228421"
+}
+2026-04-12 15:07:47,506:DEBUG:acme.client:Storing nonce: wN0WXCrxb3T-cV99ELvDtDg06K-O6DG38-dtfs15x4snJ3kNb74
+2026-04-12 15:07:47,506:DEBUG:acme.client:JWS payload:
+b''
+2026-04-12 15:07:47,507:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/authz/3227965801/687087697761:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvMzIyNzk2NTgwMSIsICJub25jZSI6ICJ3TjBXWENyeGIzVC1jVjk5RUx2RHREZzA2Sy1PNkRHMzgtZHRmczE1eDRzbkoza05iNzQiLCAidXJsIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2F1dGh6LzMyMjc5NjU4MDEvNjg3MDg3Njk3NzYxIn0",
+  "signature": "jsrdu-cpSDImKHtArAyewWL9mxLlo3BjAGp2c2kvoXcLIk_vw0qVDeUjXm356EoSW0ojAHWHVhHxp_uN0RiqEEANI6ot-nDX9BrL3GpLNwJ6YdGXXj8Gqf_gJLi-UawXS4qlU8Si88JACgTpeKmHYIpAsb0pqLBfF5oN0bOwKW5uYGG5VakZyJSI5yf_OMeBa2U9ftgmIsiXdm-g1UowFd8OrMbIFkNVR0FQBnxxEvNDJBy_YMWP3E_k_YTEs8MmcSECFAQU8O8VeMDOgMJ1R1gOJwUQziqWy5tGCLwVo3CiodE3TRTfXrX_6ku_rfnzpPWKeIp7DLLVDx1GP1Nkbw",
+  "payload": ""
+}
+2026-04-12 15:07:47,813:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/authz/3227965801/687087697761 HTTP/1.1" 200 821
+2026-04-12 15:07:47,813:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Sun, 12 Apr 2026 15:07:47 GMT
+Content-Type: application/json
+Content-Length: 821
+Connection: keep-alive
+Boulder-Requester: 3227965801
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: wN0WXCrxHa_T0S6T0dSdguzEXWeNHTfK2kEu-v78RizwfzsHxL4
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "pytrix.eu.org"
+  },
+  "status": "pending",
+  "expires": "2026-04-19T15:07:46Z",
+  "challenges": [
+    {
+      "type": "dns-01",
+      "url": "https://acme-v02.api.letsencrypt.org/acme/chall/3227965801/687087697761/tXHMZQ",
+      "status": "pending",
+      "token": "NvKRCM1o7Q8jSGZYmPEBIYoIafbYAsnX06G7DFXXUOU"
+    },
+    {
+      "type": "tls-alpn-01",
+      "url": "https://acme-v02.api.letsencrypt.org/acme/chall/3227965801/687087697761/NVTYqA",
+      "status": "pending",
+      "token": "NvKRCM1o7Q8jSGZYmPEBIYoIafbYAsnX06G7DFXXUOU"
+    },
+    {
+      "type": "http-01",
+      "url": "https://acme-v02.api.letsencrypt.org/acme/chall/3227965801/687087697761/VEsEXA",
+      "status": "pending",
+      "token": "NvKRCM1o7Q8jSGZYmPEBIYoIafbYAsnX06G7DFXXUOU"
+    }
+  ]
+}
+2026-04-12 15:07:47,813:DEBUG:acme.client:Storing nonce: wN0WXCrxHa_T0S6T0dSdguzEXWeNHTfK2kEu-v78RizwfzsHxL4
+2026-04-12 15:07:47,814:DEBUG:acme.challenges:tls-alpn-01 was not recognized, full message: {'type': 'tls-alpn-01', 'url': 'https://acme-v02.api.letsencrypt.org/acme/chall/3227965801/687087697761/NVTYqA', 'status': 'pending', 'token': 'NvKRCM1o7Q8jSGZYmPEBIYoIafbYAsnX06G7DFXXUOU'}
+2026-04-12 15:07:47,814:INFO:certbot._internal.auth_handler:Performing the following challenges:
+2026-04-12 15:07:47,814:INFO:certbot._internal.auth_handler:dns-01 challenge for Identifier(typ=IdentifierType(dns), value='pytrix.eu.org')
+2026-04-12 15:07:47,815:DEBUG:certbot._internal.error_handler:Encountered exception:
+Traceback (most recent call last):
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/auth_handler.py", line 84, in handle_authorizations
+    resps = self.auth.perform(achalls)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 68, in perform
+    self._setup_credentials()
+  File "/opt/certbot/lib/python3.11/site-packages/certbot_dns_acmedns/dns_acmedns.py", line 64, in _setup_credentials
+    self.credentials = self._configure_credentials('credentials',
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 202, in _configure_credentials
+    validator(credentials_configuration)
+  File "/opt/certbot/lib/python3.11/site-packages/certbot_dns_acmedns/dns_acmedns.py", line 45, in _validate_credentials
+    dns_common.validate_file_permissions(credentials.conf('registration-file'))
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 347, in validate_file_permissions
+    validate_file(filename)
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 338, in validate_file
+    raise errors.PluginError('File not found: {0}'.format(filename))
+certbot.errors.PluginError: File not found: /data/acme-registration.json
+
+2026-04-12 15:07:47,815:DEBUG:certbot._internal.error_handler:Calling registered functions
+2026-04-12 15:07:47,815:INFO:certbot._internal.auth_handler:Cleaning up challenges
+2026-04-12 15:07:47,815:DEBUG:certbot._internal.log:Exiting abnormally:
+Traceback (most recent call last):
+  File "/opt/certbot/bin/certbot", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/main.py", line 18, in main
+    return internal_main.main(cli_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/main.py", line 1886, in main
+    return config.func(config, plugins)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/main.py", line 1598, in certonly
+    lineage = _get_and_save_cert(le_client, config, sans, certname, lineage)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/main.py", line 143, in _get_and_save_cert
+    lineage = le_client.obtain_and_enroll_certificate(sans, certname)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/client.py", line 533, in obtain_and_enroll_certificate
+    cert, chain, key, _ = self.obtain_certificate(sans)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/client.py", line 434, in obtain_certificate
+    orderr = self._get_order_and_authorizations(csr.data, self.config.allow_subset_of_names)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/client.py", line 512, in _get_order_and_authorizations
+    authzr = self.auth_handler.handle_authorizations(orderr, self.config, best_effort)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/_internal/auth_handler.py", line 84, in handle_authorizations
+    resps = self.auth.perform(achalls)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 68, in perform
+    self._setup_credentials()
+  File "/opt/certbot/lib/python3.11/site-packages/certbot_dns_acmedns/dns_acmedns.py", line 64, in _setup_credentials
+    self.credentials = self._configure_credentials('credentials',
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 202, in _configure_credentials
+    validator(credentials_configuration)
+  File "/opt/certbot/lib/python3.11/site-packages/certbot_dns_acmedns/dns_acmedns.py", line 45, in _validate_credentials
+    dns_common.validate_file_permissions(credentials.conf('registration-file'))
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 347, in validate_file_permissions
+    validate_file(filename)
+  File "/opt/certbot/lib/python3.11/site-packages/certbot/plugins/dns_common.py", line 338, in validate_file
+    raise errors.PluginError('File not found: {0}'.format(filename))
+certbot.errors.PluginError: File not found: /data/acme-registration.json
+2026-04-12 15:07:47,817:ERROR:certbot._internal.log:File not found: /data/acme-registration.json
