@@ -1,0 +1,6 @@
+pytrix
+pytrix_controllers
+pytrix_i18n
+pytrix_models
+pytrix_utils
+pytrix_views

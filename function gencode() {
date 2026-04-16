@@ -1,8 +1,0 @@
-function gencode() {
-  local prompt="$1"
-  local raw_output=$(ollama run seu-modelo "$prompt")
-  local filename=$(echo "$raw_output" | tail -n 1 | tr -d '\r')
-  
-  echo "$raw_output" | head -n -1 > "$filename"
-  echo "✅ Arquivo '$filename' gerado no /root!"
-}
