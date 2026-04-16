@@ -4,7 +4,8 @@ version = "0.1.0"
 description = "Ecossistema Pytrix"
 
 [project.scripts]
-pytrix = "pytrix:main"
+pytrix = "pytrix.pytrix:main"
 
 [tool.setuptools]
-packages = ["pytrix"]
+packages = ["pytrix_utils"]
+
