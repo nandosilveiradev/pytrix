@@ -1,39 +1,47 @@
-from i18n.i18n import I18N
-from abc import ABC, abstractmethod
+# /root/pytrix/pytrix_views/pytrix_view_base.py
+from typing import Protocol, runtime_checkable, List
+import questionary
 
-# --- 1. UNIDADE GLOBAL (O CONTRATO) ---
-class PytrixI18NProtocol(ABC):
-    def __init__(self, px_i18n: dict = I18N):
-        self.px_i18n = px_i18n
-
-    @abstractmethod
-    def pytrix_get_msg(self, px_key: str) -> str:
-        """Contrato: Apenas define o que deve existir."""
-        pass
-
-# --- 2. O MOLDE (A LÓGICA DO TRATAMENTO) ---
-class PytrixTemplateModel(PytrixI18NProtocol):
-    def pytrix_get_msg(self, px_key: str) -> str:
-        """Aqui o dado é tratado/recuperado antes da view."""
-        return self.px_i18n.get(px_key, px_key)
-
-# --- 3. A HERANÇA DE USO (O GARÇOM DOS DADOS) ---
-class PytrixModelBase(PytrixTemplateModel):
+@runtime_checkable
+class PytrixViewBaseProtocol(Protocol):
     """
-    Usa esse cara para os Dumps JSON. 
-    Se não tem banco, ele busca no dicionário/dump.
+    ANARQUIA: O contrato para qualquer View Pytrix.
+    Se tem esses métodos, a máquina aceita.
     """
-    pass
+    px_stats: bool
+    px_base_name: str
 
-# --- 4. A VIEW (A ESTETICISTA BURRA) ---
-class PytrixView:
-    def __init__(self, px_translator: PytrixI18NProtocol):
-        # Ela recebe um tradutor que segue o protocolo
-        self.px_translator = px_translator
+    def show_message(self, message: str) -> str: ...
+    def show_error(self, error: str) -> str: ...
+    def show_success(self, success: str) -> str: ...
+    def show_menu(self, options: List[str], prompt: str) -> str: ...
+    def show_value(self, msg: str) -> None: ...
 
-    def pytrix_show_message(self, px_key: str):
-        """A View só recebe a chave e 'pinta' na tela."""
-        px_msg = self.px_translator.pytrix_get_msg(px_key)
-        print(px_msg)
+class PytrixViewBase(PytrixViewBaseProtocol):
+    """
+    O TEMPLATE: Implementação oficial e produtiva.
+    """
+    def __init__(self):
+        self.px_stats = True
+        self.px_base_name = "PytrixViewTemplate"
 
-# pytrix_view.py
+    def show_message(self, message: str) -> str:
+        return message
+
+    def show_error(self, error: str) -> str:
+        return f"[ERRO] {error}"
+
+    def show_success(self, success: str) -> str:
+        return f"[OK] {success}"
+
+    def show_menu(self, options: list, prompt: str) -> str:
+        # A interatividade que acelera o dev
+        choice = questionary.select(
+            prompt,
+            choices=options
+        ).ask()
+        return choice
+
+    def show_value(self, msg: str) -> None:
+        # Único ponto de saída real
+        print(f"{msg}")
