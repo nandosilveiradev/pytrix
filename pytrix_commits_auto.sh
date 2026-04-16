@@ -28,6 +28,7 @@ for file in $files; do
 done
 
 if [ $count -gt 0 ]; then
+    git add -A
     # Commit único com todas as alterações (Batch processing)
     echo -e "feat(core): bulk sync $count files\n\n$summary" | git commit -F -
     echo "✅ Sucesso! $count arquivos processados na Refinaria."
