@@ -1,12 +1,13 @@
+
+
+from pytrix_controllers.pytrix_controllers_select_language import PytrixControllerSelectLanguage
+from typing import Protocol, runtime_checkable, List
 """
 app.py (legacy) : 
 pytrix.py 
 Enquanto instancia nativa pytrix.py, ao rodar forge o nome do pytrix.py será modificado para nome do utilitário
 fica a critério do usuário manter o nome após forge
 """
-
-from pytrix_controllers.pytrix_controllers_select_language import PytrixControllerSelectLanguage
-
 class App:
     def __init__(self):
         # controlador responsável pela seleção de idioma

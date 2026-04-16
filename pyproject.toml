@@ -4,8 +4,8 @@ version = "0.1.0"
 description = "Ecossistema Pytrix"
 
 [project.scripts]
-pytrix = "pytrix.pytrix:main"
+pytrix = "pytrix:main"
 
 [tool.setuptools]
-packages = ["pytrix_utils"]
-
+py-modules = ["pytrix"] # <--- Isso força o reconhecimento do arquivo pytrix.py
+packages = ["pytrix_utils", "pytrix_models", "pytrix_controllers", "pytrix_views", "pytrix_i18n"]
