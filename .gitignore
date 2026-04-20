@@ -1,14 +1,22 @@
-
-
-**__pycache__/
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
+*.class
 venv/
-.teste.py.swp
-*.swp
-.docker/
-*.log
-docker-compose.override.yml
-.env
-*.backup
-.ssh_cache/
-pytrix_docker_compose.ymlbk
+pytrix_venv/
+.env*
+
+# Pytrix Específico
+all.py
+pytrix_tmp/
+unnamed_1.txt
+teste*.py
+kaakak.py
+blald.html
+logs/
+
+# C/C++
+*.o
+*.out
+Makefile (se for gerado automaticamente)
+pytrix_leads.json
