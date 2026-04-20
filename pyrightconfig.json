@@ -1,0 +1,15 @@
+{
+  "include": ["."],
+  "exclude": ["**/node_modules", "**/__pycache__", "pytrix_tmp"],
+  "typeshedPath": "./dist/typeshed-fallback",
+  "useLibraryCodeForTypes": true,
+  "diagnosticMode": "openFilesOnly",
+  "typeCheckingMode": "basic"
+}
+{
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "venv"
+  ]
+}

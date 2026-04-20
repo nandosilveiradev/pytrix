@@ -1,0 +1,29 @@
+📑 Gestão de Arquivos e Abas
+Atalho	Ação
+Alt + S	Salvar o arquivo atual
+Ctrl + N	Criar uma nova aba ([Novo])
+Ctrl + W	Fechar aba (pede confirmação se houver alterações)
+Ctrl + Tab	Próxima aba
+Ctrl + Shift + Tab	Aba anterior
+ESC (2x rápido)	Sair do editor
+⌨️ Edição e Multi-Cursor
+Atalho	Ação
+Ctrl + Space	Adicionar Cursor: Fixa um cursor extra na posição atual
+Ctrl + Shift + Space	Remover o último cursor extra adicionado
+Ctrl + Z	Desfazer (Undo)
+Ctrl + Y	Refazer (Redo)
+Ctrl + D	Duplicar a linha atual
+Ctrl + K	Deletar a linha atual
+Ctrl + C	Copiar linha
+Ctrl + V	Colar linha/texto
+🔍 Navegação e Busca
+Atalho	Ação
+Ctrl + F	Abrir busca (digite e veja o highlight em tempo real)
+Ctrl + G	Ir para linha específica (digite o número + Enter)
+Home / End	Início / Fim da linha
+PageUp / PageDown	Subir / Descer página inteira
+🖥️ Painéis e Interface
+Atalho	Ação
+Ctrl + B	Alterna a Árvore de Arquivos (File Tree)
+Ctrl + T	Alterna o foco para o Terminal (Shell)
+ESC	Botão de Pânico: Cancela busca, remove todos os multi-cursores ou sai do foco do terminal

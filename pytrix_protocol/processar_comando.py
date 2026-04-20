@@ -1,48 +1,47 @@
-import subprocess
-import os
 import re
+import os
+import subprocess
 
-def processar_comando(comando_usuario):
-    ollama_bin = "/usr/local/bin/ollama"
+def processar_pytrix_contexto(resposta_ia):
+    # Regex atualizada para o novo padrão: pytrix_contexto
+    padrao = r'<pytrix_contexto filename="(.*?)">(.*?)</pytrix_contexto>'
     
-    # --- O ENVELOPE (A MÁGICA) ---
-    # Adicionamos as regras rígidas antes e depois do que você disse
-    prefixo = "Gere apenas o código puro em Python. Não explique nada, não diga 'Aqui está', não use markdown. "
-    sufixo = " . Na última linha, escreva apenas o nome do arquivo com extensão .py (exemplo: script.py)."
+    # re.DOTALL é o que permite pegar o código com múltiplas linhas
+    matches = re.finditer(padrao, resposta_ia, re.DOTALL)
     
-    prompt_final = f"{prefixo} {comando_usuario} {sufixo}"
-    
-    # Chamada do Ollama
-    cmd = [ollama_bin, "run", "llama3", prompt_final]
-    
-    try:
-        resultado = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        out = resultado.stdout
-        
-        # Limpeza de possíveis blocos de markdown que a IA teime em usar
-        clean_out = out.replace("```python", "").replace("```", "").strip()
-        linhas = [l for l in clean_out.split('\n') if l.strip()]
-        
-        if not linhas:
-            return "erro_vazio.py"
-            
-        # Pega o nome na última linha (usando regex para garantir que pegamos só o nome.py)
-        ultima_linha = linhas[-1].strip()
-        match = re.search(r'([\w-]+\.py)', ultima_linha)
-        nome_arquivo = match.group(1) if match else "script_gerado.py"
-        
-        # O conteúdo é tudo menos a última linha
-        conteudo = "\n".join(linhas[:-1])
-        
-        # Salvando no diretório padrão
-        os.makedirs("/root/projetos", exist_ok=True)
-        caminho = os.path.join("/root/projetos", nome_arquivo)
-        
-        with open(caminho, "w") as f:
-            f.write(conteudo)
-            
-        return nome_arquivo
+    arquivos_gerados = []
 
-    except Exception as e:
-        print(f"Erro interno no Pytrix Core: {e}")
-        return None
+    for match in matches:
+        filename = match.group(1).strip()
+        conteudo = match.group(2).strip()
+        
+        # Salvando na pasta core (ajuste o caminho se necessário)
+        caminho_saida = os.path.join("../pytrix_core", filename)
+        
+        try:
+            with open(caminho_saida, "w") as f:
+                f.write(conteudo)
+            
+            print(f"✅ [CONTEXTO] Arquivo '{filename}' destilado com sucesso.")
+            arquivos_gerados.append(caminho_saida)
+            
+            # Se for um script, já garante a permissão de execução
+            if filename.endswith(('.sh', '.py')):
+                os.chmod(caminho_saida, 0o755)
+
+        except Exception as e:
+            print(f"❌ [ERRO] Falha ao salvar {filename}: {e}")
+
+    # --- O TOQUE FINAL: O BIP ---
+    if arquivos_gerados:
+        # Tenta rodar o seu binário 'bip' para avisar que terminou
+        try:
+            # Roda o bip que está na pasta atual do protocolo
+            subprocess.run(["./bip"], check=False)
+        except:
+            print("🔔 [AVISO] Processamento concluído (bip falhou ou não encontrado).")
+    else:
+        print("⚠️ [AVISO] Nenhuma tag <pytrix_contexto> identificada.")
+
+# Exemplo de chamada:
+# processar_pytrix_contexto(output_do_jarvis)
