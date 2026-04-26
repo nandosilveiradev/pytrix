@@ -1,85 +1,68 @@
-🐊 PYTRIX: REFINERY V1 - Integrated OS Ecosystem
-The Ghost in the Machine: Performance, Resilience, and Intelligence
+Pytrix Refinery V1
+⚠️ Disclaimer
 
-O Pytrix não é apenas um repositório de scripts; é um Ambiente de Execução Soberano. Ele foi projetado para transcender as limitações de hardware (8GB RAM / 256GB SSD) através de uma arquitetura que prioriza a Cristalização Binária e a Simbiose Criador-Máquina.
+Pytrix é um ecossistema de desenvolvimento completo, que inclui:
 
-<details>
-<summary><b>🚀 Core Architecture & Boot Dynamics</b></summary>
-O Ciclo de Gênese
+    Framework base
 
-O Pytrix opera desde as camadas mais baixas até a interface de voz:
+    Protocol de comunicação
 
-    Initramfs Injection: Possibilidade de ativação do pytrix_ai_watcher diretamente no boot, preparando o terreno antes do carregamento do SO.
+    Configuração global via TOML
 
-    RamDisk Execution: Scripts críticos podem ser carregados diretamente na RAM para latência zero, protegendo o SSD de ciclos de escrita desnecessários.
+Para evitar colisão com outros frameworks (Rails, Node, etc.), todas as nomenclaturas seguem padrão próprio:
 
-    Container-Ready: Docker-compose configurado para isolar serviços de IA (Ollama) e Banco de Dados, mantendo o host Debian limpo.
+    PytrixNome → classes
 
-    Environment Isolation: Inicialização via venv customizado (.pytrix_env) para garantir que nenhuma dependência externa "suje" o ecossistema.
+    pytrix_nome → funções
 
-Bash
+    px_nome → variáveis
 
-# Inicialização Padrão Pytrix
-source .pytrix_env/bin/activate
-./pytrix_launcher.sh --mode refinery
+Esse padrão também torna o LSP mais eficiente, já que reduz ambiguidades e melhora a análise de código.
+🔨 Sistema de Forja
 
-</details>
+    Commit atômico para gerar utilitários prontos.
 
-<details>
-<summary><b>🛠 Pytrix MVC-i18n & Global Linking</b></summary>
-Engenharia de Software Superior
+    Move tudo para utils com redundância e desacoplamento.
 
-Desenvolvido para aplicações multilinguagem e escaláveis sem dependências de bibliotecas externas pesadas:
+    Força git pull + merge para restaurar o ambiente de forma atômica.
 
-    MVC-i18n Nativo: Estrutura Model-View-Controller com suporte nativo a internacionalização via dicionários estáticos.
+    Permite uso isolado dos utilitários fora do projeto principal.
 
-    Prefabs & Herança: Uso de modelos base (pytrix_models) que servem como moldes para rápida criação de novas funcionalidades.
+🖥️ Ambiente de Desenvolvimento
 
-    Protocol Linking: Sistema de Global Links que permite que diferentes partes do sistema se comuniquem sem acoplamento, garantindo que você possa plugar ou trocar o SQL (SQLite/PostgreSQL) sem quebrar a lógica de negócio.
+    IDE própria com LSP + Pyright (pytrix_docker/Dockerfile.dev).
 
-    Hardware Agnostic: A lógica é separada do hardware, permitindo que o Pytrix "migre" de ecossistema levando seu "mapa identitário".
+    Inclui ferramentas essenciais (curl, wget, etc.).
 
-</details>
+    Suporte a Vim e PX‑Code com plugins compatíveis.
 
-<details>
-<summary><b>💎 Cristalização & Memoização (Watcher)</b></summary>
-Eficiência Bruta
+    PX‑Code otimizado para abrir arquivos enormes (30k+ linhas) em <1s.
 
-O Pytrix odeia repetição de processamento.
+    Uso intensivo de RAM + swap (40 GB configurados, 80% forçado para swap).
 
-    Cristalização: O pytrix_ai_watcher intercepta o código Python e o compila em binários nativos (.bin) na raiz do projeto. O Python vira o "rascunho" e o binário vira a "realidade".
+    Hardware de referência: Ryzen 5500U, 8 GB RAM, GPU integrada + dedicada.
 
-    Hash-Trigger Memoization: Se os dados de entrada de uma função são idênticos a um processamento anterior, o Pytrix interrompe a execução e entrega a resposta do Swap/SSD instantaneamente.
+🤖 Integração com IA
 
-    Persistent DNA: O cache de hashes sobrevive ao reboot, garantindo que a inteligência do ambiente seja cumulativa.
+    IA integrada no PX‑Code via tmux splitado, ambiente já abre pronto para interação.
 
-</details>
+    Execução sob demanda: IA não roda em tempo real, evitando consumo excessivo de recursos.
 
-<details>
-<summary><b>🎙 Jarvis & PX-Code Integration</b></summary>
-Interface de Próxima Geração
+    Hack com Ollama: força nomenclatura inicial e nome de arquivo no final → gera código automaticamente.
 
-    Jarvis Voice (STT/Speaker): Módulos de voz para controle hands-free do terminal. O Jarvis notifica apenas o essencial: sucessos de cristalização e alertas térmicos.
+    Arquivos criados em /root/projetos/ para não poluir o ambiente principal (migráveis para qualquer pasta).
 
-    PX-Code: Integração total com o editor para desenvolvimento de baixa fricção.
+🔒 Segurança e Isolamento
 
-    AI Naming: Sugestão inteligente de nomes de arquivos e estruturas para manter o projeto limpo e SEO-friendly.
+    Setup inicial em root para criar permissões isoladas de usuários.
 
-</details>
-📂 Estrutura do Ecossistema
-Diretório	Responsabilidade
-pytrix_bin/	Armazém de executáveis nativos (Cristalizados).
-pytrix_core/	Engine central, lógica de boot e gerenciamento de memória.
-pytrix_models/	Prefabs e abstração de dados (SQL Bridge).
-pytrix_views/	Interface de usuário (TUI) e logs de telemetria.
-pytrix_protocol/	Definições de comunicação e infraestrutura Docker.
-pytrix_utils/	Helpers de baixo nível e integração com nnn.
-⚡ Fluxo de Trabalho (Daily Grind)
+    Usuários clonam ambientes corporativos sem ambientação prévia.
 
-    Desenvolva no PX-Code usando Python/C.
+    SSH seguro: root login desativado; acesso apenas via usuário comum + autenticação → reduz vulnerabilidades.
 
-    Salve: O pytrix_ai_watcher detecta a mudança de Hash.
+    Execução isolada dos utilitários, garantindo que o ambiente principal permaneça intacto.
 
-    Execute: O sistema decide se usa o interpretador ou se faz o Hot-Swap para o binário cristalizado em pytrix_bin.
+⚙️ Execução
 
-    Evolua: A cada execução, o Pytrix aprende o seu padrão e move os resultados para o Swap, liberando seus 8GB de RAM para novas tarefas.
+    Pytrix roda globalmente ao ativar venv:
+    bash
